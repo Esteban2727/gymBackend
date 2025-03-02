@@ -22,9 +22,13 @@ export const validateDatasMessages={
         isNotEmpty: 'You cant leave this field empty'
     },
     rol:{
-        isString: 'el rol no es string',
+        isString: 'el rol  es string',
          isNotEmpty: 'You cant leave this field empty',
          typeRol: "you must write some Rol",rolEnum
+    },
+    identification:{
+        isString: 'the identification  is string',
+        isNotEmpty: 'You cant leave this field empty',
     }
 
 }

@@ -8,6 +8,7 @@ export class RegisterService {
     @InjectRepository(User) readonly UserRepository: Repository<User>,
   ) {}
   async register(
+    identification,
     username: string,
     email: string,
     password: string,
@@ -23,11 +24,13 @@ export class RegisterService {
       }
       const HashPassword:string= await  bcrypt.hash(password, await bcrypt.genSalt());
       const user = await this.UserRepository.create({
+        identification:identification,
         username: username,
         email: email,
         password: HashPassword,
         cellphone: number,
         rol: rol,
+
       });
       await this.UserRepository.save(user);
       return user;

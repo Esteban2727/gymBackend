@@ -7,14 +7,17 @@ export class RegisterController {
   constructor(private readonly registerService: RegisterService) {}
   @Post('')
   async register(@Body() registerDto: registerDTO) {
-    const { email, cellphone, password, username, rol } = registerDto;
+    
+    const { identification ,email, cellphone, password, username, rol } = registerDto;
     const saveDatas = await this.registerService.register(
+      identification,
       username,
       email,
       password,
       cellphone,
-      rol,
+      rol
     );
+    console.log("entro")
     return saveDatas;
   }
 }

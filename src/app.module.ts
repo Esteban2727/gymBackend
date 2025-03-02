@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entity/user.entity';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { User } from './auth/entity/user.entity';
 
     TypeOrmModule.forFeature([User]),
     AuthModule,
+    CustomerModule,
   ],
 })
 export class AppModule {}

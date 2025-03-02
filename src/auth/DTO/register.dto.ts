@@ -26,4 +26,8 @@ export class registerDTO{
  @IsNotEmpty({ message: validateDatasMessages.rol.isNotEmpty })
  @IsString({message:validateDatasMessages.rol.typeRol})
  readonly rol:string
+
+ @IsNotEmpty({ message: validateDatasMessages.identification.isNotEmpty })
+ @IsString({message:validateDatasMessages.identification.isString})
+ readonly identification:string
 }
