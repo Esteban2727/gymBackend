@@ -17,7 +17,7 @@ export class RegisterService {
   ) {
     try {
       const verifyDatasServices = await this.UserRepository.findOne({
-        where: [{ username: username, email: email }],
+        where: [{ username: username},{ email: email },{identification:identification}],
       });
       if (verifyDatasServices) {
         return 'esos datos ya estan registrados';
@@ -33,6 +33,7 @@ export class RegisterService {
 
       });
       await this.UserRepository.save(user);
+   
       return user;
     } catch (e) {
       throw new Error('error al procesar datos');

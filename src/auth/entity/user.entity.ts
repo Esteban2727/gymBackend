@@ -21,6 +21,9 @@ export class User {
   @Column({ default: true }) 
   isActive: boolean; 
 
+  @Column({ nullable: true }) 
+  profilePicture: string;
+
   @CreateDateColumn() 
   createdAt: Date; 
 

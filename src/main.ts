@@ -4,6 +4,7 @@ import * as session from 'express-session';
 import * as express from 'express';
 import {CONFIG_SESSION} from "./configNest/config"
 import * as cookieParser from 'cookie-parser';
+import { existsSync, mkdirSync } from 'fs';
 declare module 'express-session' {
   interface SessionData {
     user: {
@@ -17,6 +18,9 @@ declare module 'express-session' {
   }
 }
 async function bootstrap() {
+  if (!existsSync('./uploads')) {
+    mkdirSync('./uploads');
+  }
   const app = await NestFactory.create(AppModule);
   
 

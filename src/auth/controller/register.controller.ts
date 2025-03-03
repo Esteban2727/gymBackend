@@ -17,7 +17,7 @@ export class RegisterController {
       cellphone,
       rol
     );
-    console.log("entro")
+   
     return saveDatas;
   }
 }

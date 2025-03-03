@@ -2,14 +2,24 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
+// Módulos del proyecto
 import { AuthModule } from './auth/auth.module';
-import { User } from './auth/entity/user.entity';
 import { CustomerModule } from './customer/customer.module';
+import { UploadsModule } from './uploadFiles/uploads.module'; 
+
+import { User } from './auth/entity/user.entity';
+import { GeneratePdfModule } from './pdf/pdf.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
+   
     ConfigModule.forRoot({ isGlobal: true }),
 
+    
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -21,11 +31,11 @@ import { CustomerModule } from './customer/customer.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: true, // ❗ Solo en desarrollo, en producción usar migraciones
+        synchronize: true, 
       }),
     }),
 
-    // Configuración de JWT usando el .env
+    
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -35,9 +45,19 @@ import { CustomerModule } from './customer/customer.module';
       }),
     }),
 
+    
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads', 
+    }),
+
+    
     TypeOrmModule.forFeature([User]),
     AuthModule,
     CustomerModule,
+    UploadsModule,
+    GeneratePdfModule,
+    UserModule
   ],
 })
 export class AppModule {}
