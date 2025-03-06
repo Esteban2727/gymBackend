@@ -11,7 +11,7 @@ async GetCustomerById(ident:string){
 
     
     const bringDatas = await this.userReposotory.find(
-        {   where:{identification:'1109114799'}
+        {   where:{identification:ident}
     }
     )
     console.log(bringDatas,1132)

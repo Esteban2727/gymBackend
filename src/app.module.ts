@@ -13,6 +13,12 @@ import { UploadsModule } from './uploadFiles/uploads.module';
 import { User } from './auth/entity/user.entity';
 import { GeneratePdfModule } from './pdf/pdf.module';
 import { UserModule } from './user/user.module';
+import { Gym } from './gym/gym.entity';
+import { GymUser } from './gym/gymUser.entity';
+import { GymModule } from './gym/gym.module';
+import { SocketGateway } from './gateways/socket.gateway';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { DashboardServices } from './dashboard/services/dashboard.service';
 
 @Module({
   imports: [
@@ -52,12 +58,16 @@ import { UserModule } from './user/user.module';
     }),
 
     
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User,Gym,GymUser]),
     AuthModule,
     CustomerModule,
     UploadsModule,
     GeneratePdfModule,
-    UserModule
+    UserModule,
+    GymModule,
+    DashboardModule
+   
   ],
+  providers: []
 })
 export class AppModule {}

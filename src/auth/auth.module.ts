@@ -1,26 +1,41 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './services/auth.service';
-import { AuthController } from './controller/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entity/user.entity'
-import { JwtStrategy } from '../jwt/jwt.strategy';
-import { RegisterController } from './controller/register.controller';
+
+import { User } from './entity/user.entity';
+
 import { RegisterService } from './services/register.service';
-import { LoginController } from './controller/login.controller';
 import { loginServices } from './services/login.service';
+import { RecoverPasswordServices } from './services/recoverPassword.service';
+import { JwtStrategy } from '../jwt/jwt.strategy';
+
+import { RegisterController } from './controller/register.controller';
+import { LoginController } from './controller/login.controller';
+import { RecoverPasswordController } from './controller/recoverPassword.controller';
+
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: "hola",
-      signOptions: { expiresIn: "2h" },
+      secret: "hola", 
+      signOptions: { expiresIn: '2h' },
     }),
     TypeOrmModule.forFeature([User]),
+    MailModule,  
   ],
-  controllers: [RegisterController,LoginController],
-  providers: [RegisterService,loginServices, JwtStrategy],
+  controllers: [
+    RegisterController,
+    LoginController,
+    RecoverPasswordController,
+  ],
+  providers: [
+    RegisterService,
+    loginServices,
+    RecoverPasswordServices,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

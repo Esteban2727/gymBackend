@@ -23,8 +23,8 @@ export class registerDTO{
  @IsString({message:validateDatasMessages.email.isString})
  readonly username:string
 
- @IsNotEmpty({ message: validateDatasMessages.rol.isNotEmpty })
- @IsString({message:validateDatasMessages.rol.typeRol})
+
+
  readonly rol:string
 
  @IsNotEmpty({ message: validateDatasMessages.identification.isNotEmpty })

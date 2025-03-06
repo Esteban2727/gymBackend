@@ -7,6 +7,7 @@ import { User } from '../auth/entity/user.entity'
 import { JwtStrategy } from '../jwt/jwt.strategy';
 import { CustomerController } from './controller/customer.controller';
 import { CustomerService } from './services/customer.service';
+import { Gym } from 'src/gym/gym.entity';
 
 
 @Module({

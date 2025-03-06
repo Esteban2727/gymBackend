@@ -5,6 +5,8 @@ import * as express from 'express';
 import {CONFIG_SESSION} from "./configNest/config"
 import * as cookieParser from 'cookie-parser';
 import { existsSync, mkdirSync } from 'fs';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 declare module 'express-session' {
   interface SessionData {
     user: {
@@ -23,6 +25,24 @@ async function bootstrap() {
   }
   const app = await NestFactory.create(AppModule);
   
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+
+  }));
+
+
+  const config = new DocumentBuilder()
+    .setTitle('API Documentación')
+    .setDescription('Documentación de la API con Swagger')
+    .setVersion('1.0')
+    .addTag('Ejemplo')
+    .build();
+    
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   const PORT = process.env.PORT || 3001;
   app.enableCors(); 

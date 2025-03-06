@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn, OneToMany } from 'typeorm';
+import { GymUser } from '../../gym/gymUser.entity';
+
 
 @Entity()
 export class User {
@@ -8,7 +10,8 @@ export class User {
 
   @Column({ unique: true })
   username: string;
-
+ @Column({default:null})
+  gender:string
   @Column()
   password: string;
   @Column()
@@ -18,8 +21,6 @@ export class User {
   @Column({default:"customer"})
   rol: string;
 
-  @Column({ default: true }) 
-  isActive: boolean; 
 
   @Column({ nullable: true }) 
   profilePicture: string;
@@ -29,4 +30,13 @@ export class User {
 
   @DeleteDateColumn({ nullable: true }) 
   deletedAt: Date | null;
+
+
+   // Relación muchos a muchos con Gym a través de GymUser
+   @OneToMany(() => GymUser, (gymUser) => gymUser.user)
+   gymUsers: GymUser[];
 }
+
+
+
+

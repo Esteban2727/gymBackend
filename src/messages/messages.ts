@@ -7,7 +7,7 @@ export const validateDatasMessages={
         isNotEmpty: 'You cant leave this field empty'
     },
     username:{
-        isString: 'the username must be a string',
+        isString: 'the name must be a string',
         isUsername: 'The username already exist',
         isNotEmpty: 'You cant leave this field empty'
     },
@@ -29,6 +29,21 @@ export const validateDatasMessages={
     identification:{
         isString: 'the identification  is string',
         isNotEmpty: 'You cant leave this field empty',
-    }
+    },
+    
+    primaryColor:{
+        isString: 'the primaryColor  is string',
+        isNotEmpty: 'You cant leave this field empty',
+    },
+
+secondaryColor:{
+    isString: 'the secondaryColor  is string',
+        isNotEmpty: 'You cant leave this field empty',
+},
+
+font:{
+    isString: 'the font  is string',
+    isNotEmpty: 'You cant leave this field empty',
+}
 
 }
