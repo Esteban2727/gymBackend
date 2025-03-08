@@ -41,8 +41,8 @@ export class DashboardServices {
 return result;
   }
 
-  async UpdateDatasInformation(id: number, stock: number): Promise<any> {
+  async updateDatasInformation(id: number, stock: number): Promise<any> {
     this.socketGateway.emitProductUpdate();
-        return "gola";
+    return 'Data updated';
   }
 }

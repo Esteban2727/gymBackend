@@ -4,8 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ScheduleModule } from '@nestjs/schedule';
 
-// Módulos del proyecto
 import { AuthModule } from './auth/auth.module';
 import { CustomerModule } from './customer/customer.module';
 import { UploadsModule } from './uploadFiles/uploads.module'; 
@@ -16,16 +16,15 @@ import { UserModule } from './user/user.module';
 import { Gym } from './gym/gym.entity';
 import { GymUser } from './gym/gymUser.entity';
 import { GymModule } from './gym/gym.module';
-import { SocketGateway } from './gateways/socket.gateway';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { DashboardServices } from './dashboard/services/dashboard.service';
+import { Subscription } from './subcription/Entity/subcription.entity';
+import { subcriptionModule } from './subcription/subcription.module';
+import { GateWayModule } from './gateways/gateway.module';
 
 @Module({
   imports: [
-   
     ConfigModule.forRoot({ isGlobal: true }),
 
-    
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -41,7 +40,6 @@ import { DashboardServices } from './dashboard/services/dashboard.service';
       }),
     }),
 
-    
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -51,22 +49,23 @@ import { DashboardServices } from './dashboard/services/dashboard.service';
       }),
     }),
 
-    
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads', 
     }),
 
-    
-    TypeOrmModule.forFeature([User,Gym,GymUser]),
+    ScheduleModule.forRoot(),
+
+    TypeOrmModule.forFeature([User, Gym, GymUser, Subscription]),
     AuthModule,
     CustomerModule,
     UploadsModule,
     GeneratePdfModule,
     UserModule,
     GymModule,
-    DashboardModule
-   
+    DashboardModule,
+    subcriptionModule,
+    GateWayModule
   ],
   providers: []
 })

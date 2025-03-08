@@ -2,10 +2,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import * as bcrypt from 'bcrypt';
+import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 export class RegisterService {
   constructor(
     @InjectRepository(User) readonly UserRepository: Repository<User>,
+    @InjectRepository(Subscription) readonly SubscriptionRepository: Repository<Subscription>,
   ) {}
   async register(
     identification,
@@ -33,7 +35,13 @@ export class RegisterService {
 
       });
       await this.UserRepository.save(user);
-   
+
+      const addSubcriptionUser=await this.SubscriptionRepository.create({
+        startDate: new Date ,
+        user:identification
+      })
+
+      await this.SubscriptionRepository.save(addSubcriptionUser)
       return user;
     } catch (e) {
       throw new Error('error al procesar datos');

@@ -10,13 +10,11 @@ import {
   
   
   @WebSocketGateway({ cors: true })
-  export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-    
-    @WebSocketServer() server: Server;
+  export class SocketGateway implements  OnGatewayConnection, OnGatewayDisconnect {
+    @WebSocketServer()
+     server: Server;
   
-    afterInit(server: Server) {
-      console.log('WebSocket Inicializado');
-    }
+ 
   
     handleConnection(client: Socket) {
       console.log(`Cliente conectado: ${client.id}`);
@@ -26,7 +24,7 @@ import {
       console.log(`Cliente desconectado: ${client.id}`);
     }
   
-    // ✅ Emitir evento cuando un producto cambia
+    
     emitProductUpdate() {
       this.server.emit('productUpdated', );
     }

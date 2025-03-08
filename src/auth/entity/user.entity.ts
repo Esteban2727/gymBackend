@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { GymUser } from '../../gym/gymUser.entity';
-
+import {Subscription}from "../../subcription/Entity/subcription.entity"
 
 @Entity()
 export class User {
@@ -32,9 +32,14 @@ export class User {
   deletedAt: Date | null;
 
 
-   // Relación muchos a muchos con Gym a través de GymUser
+  
    @OneToMany(() => GymUser, (gymUser) => gymUser.user)
    gymUsers: GymUser[];
+
+
+   @OneToMany(() => Subscription, (subscription) => subscription.user)
+   subscriptions: Subscription[];
+   ;
 }
 
 

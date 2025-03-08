@@ -15,6 +15,7 @@ import { LoginController } from './controller/login.controller';
 import { RecoverPasswordController } from './controller/recoverPassword.controller';
 
 import { MailModule } from '../mail/mail.module';
+import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { MailModule } from '../mail/mail.module';
       secret: "hola", 
       signOptions: { expiresIn: '2h' },
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User,Subscription]),
     MailModule,  
   ],
   controllers: [

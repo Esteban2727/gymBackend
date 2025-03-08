@@ -31,7 +31,7 @@ export class LoginController {
   async compareEmail(@Body() loginDto: LoginDto, @Req() req: Request) {
     const { email, password } = loginDto;
 
-
+ console.log(req.cookies)
     const user = await this.loginServices.sign_In(email, password);
     
     if (!user) {
