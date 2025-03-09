@@ -7,7 +7,7 @@ export class ScheduleController{
         private readonly schenduleServices:ScheduleServices
     ){}
 
-@Get()
+@Get(':id')
 async schenduleUser(
     @Param('id') id:string
 ){

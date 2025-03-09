@@ -26,7 +26,6 @@ import { ScheduleModuleAttended } from './Schedule/schedule.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -38,9 +37,13 @@ import { ScheduleModuleAttended } from './Schedule/schedule.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: true, 
+        synchronize: true,
+        ssl: {
+          rejectUnauthorized: false, // Necesario para conexiones con SSL
+        },
       }),
     }),
+    
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
