@@ -20,6 +20,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { Subscription } from './subcription/Entity/subcription.entity';
 import { subcriptionModule } from './subcription/subcription.module';
 import { GateWayModule } from './gateways/gateway.module';
+import { Schedule } from './Schedule/Entity/schedule.entity';
+import { ScheduleModuleAttended } from './Schedule/schedule.module';
 
 @Module({
   imports: [
@@ -56,7 +58,7 @@ import { GateWayModule } from './gateways/gateway.module';
 
     ScheduleModule.forRoot(),
 
-    TypeOrmModule.forFeature([User, Gym, GymUser, Subscription]),
+    TypeOrmModule.forFeature([User, Gym, GymUser, Subscription,Schedule]),
     AuthModule,
     CustomerModule,
     UploadsModule,
@@ -65,7 +67,8 @@ import { GateWayModule } from './gateways/gateway.module';
     GymModule,
     DashboardModule,
     subcriptionModule,
-    GateWayModule
+    GateWayModule,
+    ScheduleModuleAttended
   ],
   providers: []
 })

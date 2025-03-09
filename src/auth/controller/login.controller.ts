@@ -34,6 +34,7 @@ export class LoginController {
  console.log(req.cookies)
     const user = await this.loginServices.sign_In(email, password);
     
+    
     if (!user) {
       throw new BadRequestException("Invalid email or password");
     }
