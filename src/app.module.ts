@@ -38,6 +38,7 @@ import { ScheduleModuleAttended } from './Schedule/schedule.module';
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
         synchronize: true,
+        logging:true,
         ssl: {
           rejectUnauthorized: false, // Necesario para conexiones con SSL
         },
