@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Schedule } from "./Entity/schedule.entity";
 import { ScheduleController } from "./controller/schedule.controller";
 import { ScheduleServices } from "./services/schedule.service";
+import { User } from "src/auth/entity/user.entity";
 
 
 @Module({
@@ -14,7 +15,7 @@ import { ScheduleServices } from "./services/schedule.service";
             secret: "hola",
             signOptions: { expiresIn: "2h" },
         }),
-        TypeOrmModule.forFeature([Schedule])
+        TypeOrmModule.forFeature([Schedule,User])
     ],
     controllers:[ScheduleController],
     providers:[ScheduleServices]
