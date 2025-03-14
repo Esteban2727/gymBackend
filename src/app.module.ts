@@ -20,8 +20,21 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { Subscription } from './subcription/Entity/subcription.entity';
 import { subcriptionModule } from './subcription/subcription.module';
 import { GateWayModule } from './gateways/gateway.module';
-import { Schedule } from './Schedule/Entity/schedule.entity';
-import { ScheduleModuleAttended } from './Schedule/schedule.module';
+
+
+import { MuscleGroup } from './groupMuscle/Entity/muscleGroup.entity';
+import { Exercise } from './exercises/Entity/exercise.entity';
+import { ExerciseTrainingType } from './exercise-trainingType/Entity/exercise-trainingType.entity';
+import { TrainingType } from './trainingType/entity/trainingType.entity';
+import { ExerciseMuscleGroup } from './exerciseGroupMuscular/exerciseGroupMuscular.entity';
+import { Customer } from './customer/customer.entity';
+import { Trainer } from './Trainer/trainer.entity';
+import { TrainerModule } from './Trainer/trainer.module';
+import { Routine } from './rutine/rutine.entity';
+import { RoutineExercise } from './rutine/routineExcersise.entity';
+import { RoutineTrainer } from './rutine/routineTrainer';
+import { routineMOdule } from './rutine/routine.module';
+import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
 
 @Module({
   imports: [
@@ -38,10 +51,10 @@ import { ScheduleModuleAttended } from './Schedule/schedule.module';
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
         synchronize: true,
-        logging:true,
+/*         
         ssl: {
-          rejectUnauthorized: false, // Necesario para conexiones con SSL
-        },
+          rejectUnauthorized: false, 
+        }, */
       }),
     }),
     
@@ -62,7 +75,9 @@ import { ScheduleModuleAttended } from './Schedule/schedule.module';
 
     ScheduleModule.forRoot(),
 
-    TypeOrmModule.forFeature([User, Gym, GymUser, Subscription,Schedule]),
+    TypeOrmModule.forFeature([User, Gym, GymUser, Subscription,
+      MuscleGroup,Exercise,ExerciseTrainingType,TrainingType,
+      ExerciseMuscleGroup,Customer,Trainer,Routine,RoutineExercise,RoutineTrainer]),
     AuthModule,
     CustomerModule,
     UploadsModule,
@@ -72,7 +87,10 @@ import { ScheduleModuleAttended } from './Schedule/schedule.module';
     DashboardModule,
     subcriptionModule,
     GateWayModule,
-    ScheduleModuleAttended
+    routineMOdule,
+  TrainerModule,
+  groupMuscleModule
+    
   ],
   providers: []
 })

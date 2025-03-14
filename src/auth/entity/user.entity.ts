@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn, OneToMany, OneToOne, JoinColumn, TableInheritance } from 'typeorm';
 import { GymUser } from '../../gym/gymUser.entity';
-import {Subscription}from "../../subcription/Entity/subcription.entity"
-import { ScheduleModule } from '@nestjs/schedule';
-import { Schedule } from 'src/Schedule/Entity/schedule.entity';
+
+
 
 @Entity()
+@TableInheritance({ column: { type: 'varchar', name: 'type',default: 'customer' } })
 export class User {
 
   @PrimaryColumn({name:"identification"})
@@ -22,8 +22,6 @@ export class User {
   email: string;
   @Column({default:"customer"})
   rol: string;
-
-
   @Column({ nullable: true }) 
   profilePicture: string;
 
@@ -39,11 +37,9 @@ export class User {
    gymUsers: GymUser[]
 
 
-   @OneToMany(() => Subscription, (subscription) => subscription.user)
-   subscriptions: Subscription[]
+
    
-   @OneToMany(() => Schedule, (schedule) => schedule.user)
-   schedules: Schedule[]; 
+
    
 }
 

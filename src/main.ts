@@ -7,7 +7,6 @@ import * as cookieParser from 'cookie-parser';
 import { existsSync, mkdirSync } from 'fs';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import serverless from 'serverless-http';
 import { CONFIG_SESSION } from './configNest/config';
 
 declare module 'express-session' {
@@ -24,53 +23,56 @@ declare module 'express-session' {
 }
 
 async function bootstrap() {
-  // Crear carpeta de uploads si no existe
-  if (!existsSync('./uploads')) {
-    mkdirSync('./uploads');
+  try {
+    const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+
+    const uploadDir = './uploads';
+    if (!existsSync(uploadDir)) {
+      mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const expressApp = express();
+
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+
+    app.enableCors();
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
+    app.use(session(CONFIG_SESSION));
+
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+        transformOptions: { enableImplicitConversion: true },
+      }),
+    );
+
+    // Configuración de Swagger
+    const config = new DocumentBuilder()
+      .setTitle('API Documentación')
+      .setDescription('Documentación de la API con Swagger')
+      .setVersion('1.0')
+      .addTag('Ejemplo')
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+
+    await app.init();
+
+    // Escuchar en el puerto definido
+    await app.listen(PORT, '0.0.0.0');
+    console.log(` Servidor corriendo en http://localhost:${PORT}`);
+
+    return expressApp;
+  } catch (error) {
+    console.error(' Error al iniciar la aplicación:', error);
+    process.exit(1);
   }
-
-  // Crear instancia de Express
-  const expressApp = express();
-
-  // Usar ExpressAdapter para integrarlo con NestJS
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
-
-  // Middlewares
-  app.enableCors();
-  app.use(express.json());
-  app.use(cookieParser());
-  app.use(session(CONFIG_SESSION));
-
-  // Validaciones globales
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
-
-  // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('API Documentación')
-    .setDescription('Documentación de la API con Swagger')
-    .setVersion('1.0')
-    .addTag('Ejemplo')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
-  // Iniciar la app sin `listen()`
-  await app.init();
-
-  return expressApp;
 }
 
-// Crear la app y exportar `handler` para Vercel
-const appPromise = bootstrap();
-export const handler = serverless(async (req, res) => {
-  const app = await appPromise;
-  app(req, res);
-});
+bootstrap();

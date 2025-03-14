@@ -32,6 +32,7 @@ export class LoginController {
     const { email, password } = loginDto;
 
  console.log(req.cookies,111)
+ console.log(email,password)
     const user = await this.loginServices.sign_In(email, password);
     
     

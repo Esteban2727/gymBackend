@@ -4,7 +4,7 @@ import { RegisterService } from '../services/register.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('register')
-@ApiTags('Register') // Define una categoría en Swagger
+@ApiTags('Register') 
 export class RegisterController {
   constructor(private readonly registerService: RegisterService) {}
 
@@ -20,14 +20,15 @@ export class RegisterController {
   }})
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   async register(@Body() registerDto: registerDTO) {
-    const { identification, email, cellphone, password, username, rol } = registerDto;
+    const { identification, email, cellphone, password, username, rol ,gender} = registerDto;
     const saveDatas = await this.registerService.register(
       identification,
       username,
       email,
       password,
       cellphone,
-      rol
+      rol,
+      gender
     );
     console.log("entro");
     return saveDatas;

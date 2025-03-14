@@ -1,5 +1,5 @@
 import {validateDatasMessages} from "../../messages/messages"
-import { IsEmail, IsNotEmpty, IsNumber, isString, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, isString, IsString } from 'class-validator';
 
 export class registerDTO{
 @IsNotEmpty({ message: validateDatasMessages.email.isNotEmpty })
@@ -24,10 +24,16 @@ export class registerDTO{
  readonly username:string
 
 
-
+ @IsOptional()
+ @IsString({ message: "El rol debe ser un string" })
  readonly rol:string
 
  @IsNotEmpty({ message: validateDatasMessages.identification.isNotEmpty })
  @IsString({message:validateDatasMessages.identification.isString})
  readonly identification:string
+
+
+ @IsNotEmpty({ message: validateDatasMessages.gender.isNotEmpty })
+ @IsString({message:validateDatasMessages.gender.isString})
+ readonly gender:string
 }

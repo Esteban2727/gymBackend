@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { User } from "../entity/user.entity";
 import { comparePasswords } from "../bycript/bycript";
 import { JwtService } from "@nestjs/jwt";
+import e from "express";
 
 
 @Injectable()
@@ -15,10 +16,11 @@ export class loginServices {
   ) {}
 
   async sign_In(email: string, password: string) {
-    // Buscar usuario por email
+    console.log("entro")
     const user = await this.userRepository.findOne({
-      where: { email },
+      where:{email:email}
     });
+    console.log(user)
 
     if (!user) {
       throw new BadRequestException("User not found");

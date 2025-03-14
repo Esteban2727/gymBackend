@@ -13,8 +13,8 @@ export class SubscriptionService {
 
   async getUserSubscription(userId: string){
     return await this.subscriptionRepository.findOne({
-        where:{user:{identification:userId}},
-        relations:['user']
+        where:{customer:{identification:userId}},
+        relations:['customer']
     })
   }
 

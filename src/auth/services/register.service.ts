@@ -16,11 +16,14 @@ export class RegisterService {
     password: string,
     number: string,
     rol: string,
+    gender:string
   ) {
     try {
       const verifyDatasServices = await this.UserRepository.findOne({
+        
         where: [{ username: username},{ email: email },{identification:identification}],
       });
+      console.log("entro")
       if (verifyDatasServices) {
         return 'esos datos ya estan registrados';
       }
@@ -32,13 +35,14 @@ export class RegisterService {
         password: HashPassword,
         cellphone: number,
         rol: rol,
+        gender:gender
 
       });
       await this.UserRepository.save(user);
 
       const addSubcriptionUser=await this.SubscriptionRepository.create({
         startDate: new Date ,
-        user:identification
+        customer:identification
       })
 
       await this.SubscriptionRepository.save(addSubcriptionUser)

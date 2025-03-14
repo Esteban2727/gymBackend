@@ -44,6 +44,31 @@ secondaryColor:{
 font:{
     isString: 'the font  is string',
     isNotEmpty: 'You cant leave this field empty',
+},
+gender:{
+    isString: 'the gender  is string',
+    isNotEmpty: 'You cant leave this field empty',
+},
+yearExperience:{
+    isString: 'the experience  is string',
+    isNotEmpty: 'You cant leave this field empty',
+},
+name:{
+    isString: 'the name  is string',
+    isNotEmpty: 'You cant leave this field empty',
+},
+description:{
+    isString: 'the description  is string',
+    isNotEmpty: 'You cant leave this field empty',
+},
+difficulty_level:{
+    isString: 'the difficulty_level  is string',
+    isNotEmpty: 'You cant leave this field empty',
+},
+equipment:{
+    isString: 'the equipment  is string',
+    isNotEmpty: 'You cant leave this field empty',
 }
+
 
 }
