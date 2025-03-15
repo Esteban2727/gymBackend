@@ -6,7 +6,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 @Entity()
 export class MuscleGroup {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   name: string;

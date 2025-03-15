@@ -4,6 +4,10 @@ import { Subscription } from '../subcription/Entity/subcription.entity';
 
 @ChildEntity()
 export class Customer extends User {
+  constructor() {
+    super();
+    this.rol = 'customer'; 
+  }
 
   @Column({ type: 'date', nullable: true })
   membershipStartDate: Date;

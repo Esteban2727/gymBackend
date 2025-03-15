@@ -13,4 +13,14 @@ constructor(
 async getDatasMuscle(){
     return this.groupMuscleRepository.find()
 }
+
+
+async createGroupMuscle(name:string){
+    const createInDatabase= await this.groupMuscleRepository.create({
+        name:name
+    })
+    await this.groupMuscleRepository.save(createInDatabase)
+    return "Created"
+}
+
 }

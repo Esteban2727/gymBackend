@@ -49,7 +49,8 @@ export class LoginController {
       email: user.email,
       accessToken: access_token,
       refreshToken: refresh_token,
-      rol: user.rol
+      rol: user.rol,
+      gym: user.gymUsers.length > 0 ? user.gymUsers[0].id : null
     };
 
     return {

@@ -18,6 +18,7 @@ declare module 'express-session' {
       accessToken: string;
       refreshToken: string;
       rol: string;
+      gym:string
     };
   }
 }

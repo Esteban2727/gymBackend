@@ -7,7 +7,7 @@ import { RoutineExercise } from "src/rutine/routineExcersise.entity";
 @Entity()
 export class Exercise {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   name: string;

@@ -4,7 +4,9 @@ import {
     Param, 
     Post, 
     UseGuards, 
-    Req 
+    Req, 
+    Body,
+    Delete
   } from "@nestjs/common";
   import { AuthGuard } from "src/guards/JwtAutentication.guard";
   import { CustomerService } from "../services/customer.service";
@@ -20,6 +22,21 @@ import {
   export class CustomerController {
     constructor(private readonly CustomerService: CustomerService) {}
   
+
+
+    @Post("create/:idgym")
+    async CreateCustomer(
+      @Body()userdto: registerDTO,
+      @Param("idgym") idgym:string
+    ){
+      console.log(idgym)
+      const {cellphone,email,gender,identification,password,username}=userdto
+      const sendDataToService=await this.CustomerService.createCustomer(
+         cellphone,email,gender,identification,password,username, idgym
+      )
+      console.log(sendDataToService)
+      return sendDataToService
+    }
     @Get(":id")
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(rolEnum.cliente)
@@ -52,5 +69,17 @@ import {
     async GetDatasProfile(@SessionUser() user: any) {
       return user;
     }
+
+
+
+  @Delete("delete/:id")
+  async deleteCustomer(
+    @Param("id") id:string
+  ){
+    console.log(id)
+    const deleteCustomer= await this.CustomerService.deleteCustomer(id)
+    console.log(deleteCustomer)
+    return deleteCustomer
+  }
   }
   

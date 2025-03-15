@@ -16,4 +16,5 @@ export class UserController {
   async updateProfilePicture(@Param('id') id: string, @Body('imageUrl') imageUrl: string) {
     return await this.userService.updateProfilePicture(id, imageUrl);
   }
+  
 }
