@@ -41,5 +41,6 @@ import { Subscription } from 'src/subcription/Entity/subcription.entity';
     RecoverPasswordServices,
     JwtStrategy,
   ],
+  exports:[JwtStrategy]
 })
 export class AuthModule {}
