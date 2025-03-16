@@ -15,6 +15,9 @@ import { existsSync, mkdirSync } from 'fs';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CONFIG_SESSION } from './configNest/config';
+require('dotenv').config();
+
+console.log('✅ JWT_SECRET desde process.env:', process.env.JWT_SECRET);
 
 //ss
 
