@@ -11,6 +11,10 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
+  @Get()
+  async allUser(@Param('id') id: string) {
+    return await this.userService.getAllUser();
+  }
   
   @Patch(':id/profile-picture')
   async updateProfilePicture(@Param('id') id: string, @Body('imageUrl') imageUrl: string) {

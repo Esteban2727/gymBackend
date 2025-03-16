@@ -10,7 +10,9 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  
+  async getAllUser(){
+    return await this.userRepository.find();
+  }
   async getUserById(id: string) {
     return await this.userRepository.findOne({ where: { identification:id } });
   }
