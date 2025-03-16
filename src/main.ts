@@ -8,7 +8,12 @@ import { existsSync, mkdirSync } from 'fs';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CONFIG_SESSION } from './configNest/config';
+import * as crypto from 'crypto';
 
+// Asegurar que crypto está disponible globalmente
+if (!global.crypto) {
+  global.crypto = crypto as any;
+}
 declare module 'express-session' {
   interface SessionData {
     user: {
