@@ -32,7 +32,7 @@ export class RecoverPasswordServices {
 
     const token = this.jwtService.sign(
       { userId: user.identification },
-      { secret: 'hola', expiresIn: '1h' },
+      { secret: process.env.JWT_SECRET, expiresIn: '1h' },
     );
 
    const save= await this.mailService.sendPasswordReset(user.email, token);

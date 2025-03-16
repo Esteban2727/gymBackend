@@ -21,7 +21,7 @@ import { Subscription } from 'src/subcription/Entity/subcription.entity';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: "hola", 
+      secret: process.env.JWT_SECRET, 
       signOptions: { expiresIn: '2h' },
     }),
     TypeOrmModule.forFeature([User,Subscription]),
