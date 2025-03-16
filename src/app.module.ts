@@ -52,10 +52,10 @@ import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGro
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
         synchronize: true,
-/*         
+        
         ssl: {
           rejectUnauthorized: false, 
-        }, */
+        }, 
       }),
     }),
     
