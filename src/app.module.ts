@@ -39,7 +39,7 @@ import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGro
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
