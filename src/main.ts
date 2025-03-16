@@ -1,3 +1,10 @@
+import * as crypto from 'crypto'; // Asegúrate de importar correctamente
+
+(globalThis as any).crypto = crypto; // Asigna crypto al objeto global
+
+console.log('Crypto cargado:', typeof crypto); // Verifica que se cargó
+
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
@@ -9,9 +16,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CONFIG_SESSION } from './configNest/config';
 
-const crypto = require('crypto');
 //ss
-(globalThis as any).crypto = crypto;
 
 
 
