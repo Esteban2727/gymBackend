@@ -17,7 +17,7 @@ import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Carga las variables de entorno
+    ConfigModule, // Carga las variables de entorno
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

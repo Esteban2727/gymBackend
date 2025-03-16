@@ -13,7 +13,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
     imports: [
-      ConfigModule.forRoot(), // Carga las variables de entorno
+      ConfigModule
+      , // Carga las variables de entorno
       PassportModule,
       JwtModule.registerAsync({
         imports: [ConfigModule],
