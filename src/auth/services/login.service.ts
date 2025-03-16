@@ -18,8 +18,7 @@ export class loginServices {
   async sign_In(email: string, password: string) {
     console.log("entro")
     const user = await this.userRepository.findOne({
-      where:{email:email},
-      relations:['gymuser']
+      where:{email:email}
     });
     console.log(user)
 

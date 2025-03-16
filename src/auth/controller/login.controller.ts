@@ -50,7 +50,7 @@ export class LoginController {
       accessToken: access_token,
       refreshToken: refresh_token,
       rol: user.rol,
-      gym: user.gymUsers.length > 0 ? user.gymUsers[0].id : null
+     
     };
 
     return {
