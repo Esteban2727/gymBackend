@@ -27,4 +27,35 @@ await this.exerciseRepository.save(createExerciseInDatabase)
  return "created succefully"
 }
 
+async deleteAll(){
+
+    const deleteExercise= await this.exerciseRepository.find()
+
+    if(deleteExercise){
+         await this.exerciseRepository.softRemove(deleteExercise)
+    }
+
+}
+
+async deleteOneExcercise(idExercise:string){
+    
+const deleteOneExerciseDatabase= await this.exerciseRepository.findOne(
+    {
+        where:{id:idExercise}
+    }
+)
+if(deleteOneExerciseDatabase){
+    const deletes = await this.exerciseRepository.findOne(
+        {
+            where:{id:idExercise}
+        }
+    )
+    await this.exerciseRepository.softRemove(deletes)
+    return "deleted"
+}
+return "dont exist that exercise "
+
+}
+
+
 }

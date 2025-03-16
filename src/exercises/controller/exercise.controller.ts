@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { ExerciseServices } from "../services/exercise.service";
 import { ExerciseDto } from "../exerciseDto";
 
@@ -24,4 +24,20 @@ async createExercise(
  return createDatasExercise
 }
 
+@Delete("delete")
+
+async deleteExercise(){
+    const deleteAllExercise= await this.exerciseServices.deleteAll()
+    return deleteAllExercise
+}
+
+@Delete("delete/:id")
+
+async deleteExerciseAssigned (
+@Param("id") id : string
+){
+    const deleteOneExercise = await this.exerciseServices.deleteOneExcercise(id)
+console.log(deleteOneExercise)
+    return deleteOneExercise
+}
 }

@@ -35,6 +35,7 @@ import { RoutineExercise } from './rutine/routineExcersise.entity';
 import { RoutineTrainer } from './rutine/routineTrainer';
 import { routineMOdule } from './rutine/routine.module';
 import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
+import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGroupMuscular.module';
 
 @Module({
   imports: [
@@ -89,7 +90,8 @@ import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
     GateWayModule,
     routineMOdule,
   TrainerModule,
-  groupMuscleModule
+  groupMuscleModule,
+  exerciseGroupMuscularModule
     
   ],
   providers: []

@@ -88,10 +88,14 @@ console.log(username,identification,email )
     const verifyExistingSubscription = await this.subscriptionRepository.findOne({
         where: { customer: { identification: id } }
     });
+
+    const verifyGymAssociate = await this.GymuserRepository.findOne({
+      where:{user:{identification:id}}
+    })
     
     console.log("entro", verifyExisting);
     
-    if (verifyExisting && verifyExistingSubscription) {
+    if (verifyExisting && verifyExistingSubscription && verifyGymAssociate) {
         console.log("paso por aqui");
     
        
@@ -102,6 +106,10 @@ console.log(username,identification,email )
         if (subscription) {
             await this.subscriptionRepository.softRemove(subscription);
         }
+        const Gymuser = await this.GymuserRepository.findOne({
+          where: { user: { identification: id } }
+      });
+      await this.GymuserRepository.softRemove(Gymuser)
     
         await this.customerRepository.softRemove(verifyExisting);
     
