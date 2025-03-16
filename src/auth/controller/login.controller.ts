@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, BadRequestException } from "@nestjs/common";
+import { Body, Controller, Post, Req, UseGuards, BadRequestException, Get } from "@nestjs/common";
 import { Request } from "express";
 import { loginServices } from "../services/login.service";
 import { LoginDto } from "../DTO/login.dto";
@@ -63,5 +63,11 @@ export class LoginController {
       access_token,
       refresh_token
     };
+  }
+
+  @Get()
+  async probandoGet(){
+    console.log("funcionando")
+    return "si funcion"
   }
 }
