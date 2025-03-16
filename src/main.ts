@@ -11,9 +11,8 @@ import { CONFIG_SESSION } from './configNest/config';
 import * as crypto from 'crypto';
 
 // Asegurar que crypto está disponible globalmente
-if (!global.crypto) {
-  global.crypto = crypto as any;
-}
+global.crypto = require('crypto');
+
 declare module 'express-session' {
   interface SessionData {
     user: {
