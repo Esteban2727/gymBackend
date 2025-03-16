@@ -38,7 +38,7 @@ import {
           throw new UnauthorizedException('Session is invalid.');
         }
 
-        this.jwtService.verify(token, { secret: "hola" });
+        this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
         
         request.user = request.session.user;
 

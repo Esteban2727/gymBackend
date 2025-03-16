@@ -11,15 +11,21 @@ import { Gym } from 'src/gym/gym.entity';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { Customer } from './customer.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule.register({
-      secret: "hola",
-      signOptions: { expiresIn: "2h" },
-    }),
+   imports: [
+     ConfigModule.forRoot(), // Carga las variables de entorno
+     PassportModule,
+     JwtModule.registerAsync({
+       imports: [ConfigModule],
+       inject: [ConfigService],
+       useFactory: async (configService: ConfigService) => ({
+         secret: configService.get<string>('JWT_SECRET'),
+         signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h' },
+       }),
+     }),
     TypeOrmModule.forFeature([User,Subscription,Customer,GymUser]),
   ],
   controllers: [CustomerController],

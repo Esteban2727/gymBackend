@@ -5,13 +5,19 @@ import { GroupuMuscleController } from "./Controller/groupMuscle.controller";
 import { GroupMuscleServices } from "./services/gropuMuscle.Service";
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
-    imports:[
+      imports: [
+        ConfigModule.forRoot(), // Carga las variables de entorno
         PassportModule,
-        JwtModule.register({
-            secret: "hola", 
-        signOptions: { expiresIn: '2h' },
+        JwtModule.registerAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService) => ({
+            secret: configService.get<string>('JWT_SECRET'),
+            signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h' },
+          }),
         }),
         TypeOrmModule.forFeature([MuscleGroup])
     ],

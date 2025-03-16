@@ -2,7 +2,7 @@ import { SessionOptions } from "express-session";
 
 export const CONFIG_SESSION: SessionOptions = {
     name: 's.id',
-    secret: "hola",
+    secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
     rolling: true, 

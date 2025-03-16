@@ -9,14 +9,20 @@ import { DashboardController } from './controller/dashboard.controller';
 import { DashboardServices } from './services/dashboard.service';
 import { SocketGateway } from 'src/gateways/socket.gateway';
 import { GymUser } from 'src/gym/gymUser.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule.register({
-      secret: "hola", 
-      signOptions: { expiresIn: '2h' },
-    }),
+    imports: [
+      ConfigModule.forRoot(), // Carga las variables de entorno
+      PassportModule,
+      JwtModule.registerAsync({
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: async (configService: ConfigService) => ({
+          secret: configService.get<string>('JWT_SECRET'),
+          signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h' },
+        }),
+      }),
     TypeOrmModule.forFeature([User,GymUser]),
     MailModule,  
   ],
