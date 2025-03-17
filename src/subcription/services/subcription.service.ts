@@ -65,16 +65,21 @@ export class SubscriptionService {
 
   async checkSubscriptionAlert() {
     console.log('dias restantes');
-
+const arreglo=[]
     const subscriptions = await this.subscriptionRepository.find();
  console.log(subscriptions)
     for (const sub of subscriptions) {
       if (sub.remainingDays <= 30) {
-        return(` tiene ${sub.remainingDays} días restantes.`);
+        arreglo.push(sub)
       }
+      
+    }
+    if (arreglo.length == 0){
+      return "no hay personas que les falten menos de 5 dias"
     }
 
-    return  'No hay suscripciones con pocos días restantes.';
+    return  arreglo
+
   }
 
 
