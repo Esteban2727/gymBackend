@@ -69,7 +69,7 @@ export class SubscriptionService {
     const subscriptions = await this.subscriptionRepository.find();
  console.log(subscriptions)
     for (const sub of subscriptions) {
-      if (sub.remainingDays <= 5) {
+      if (sub.remainingDays <= 30) {
         return(` tiene ${sub.remainingDays} días restantes.`);
       }
     }
