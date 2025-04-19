@@ -18,6 +18,7 @@ export class loginServices {
     console.log('entro');
     const user = await this.userRepository.findOne({
       where: { email: email },
+      relations: ['gymUsers', 'gymUsers.gym']
     });
     console.log(user);
 
@@ -38,10 +39,12 @@ export class loginServices {
   async generateToken(
     user: User,
   ): Promise<{ access_token: string; refresh_token: string }> {
+    const gymId = user.gymUsers?.[0]?.gym?.id ?? null
     const payload = {
       id: user.identification,
       email: user.email,
       rol: user.rol,
+      
     };
 
     return {
