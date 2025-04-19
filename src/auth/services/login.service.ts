@@ -44,6 +44,7 @@ export class loginServices {
       id: user.identification,
       email: user.email,
       rol: user.rol,
+      gymId: gymId
       
     };
 
