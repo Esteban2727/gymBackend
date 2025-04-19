@@ -20,7 +20,7 @@ export class User {
   @PrimaryColumn({ name: 'identification' })
   identification: string;
 
-  @Column({ unique: true })
+  @Column()
   username: string;
   @Column({ default: null })
   gender: string;

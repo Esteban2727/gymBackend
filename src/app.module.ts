@@ -53,9 +53,9 @@ import { administrator } from './gym/entity/userAdministrador.entity';
         autoLoadEntities: true,
         synchronize: true,
 
-        ssl: {
+        /*  ssl: {
           rejectUnauthorized: false,
-        },
+        }, */
       }),
     }),
 
@@ -90,7 +90,7 @@ import { administrator } from './gym/entity/userAdministrador.entity';
       Routine,
       RoutineExercise,
       RoutineTrainer,
-      administrator
+      administrator,
     ]),
     AuthModule,
     CustomerModule,

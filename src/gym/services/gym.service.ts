@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Gym } from '../gym.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -75,10 +75,13 @@ export class gymServices {
     password: string,
   ) {
     const verifyUserGym = await this.administratorRepository.findOne({
-      where: [{ identification: identification }, { email: email }],
+      where: [{ identification }, { email }],
     });
+
     if (verifyUserGym) {
-      return 'Este administrador ya fue creado';
+      throw new BadRequestException(
+        'Ya existe un administrador con esa identificación o correo',
+      );
     }
     const HashPassword: string = await bcrypt.hash(
       password,
