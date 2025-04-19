@@ -5,6 +5,7 @@ import { IsNull, Not, Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 import { administrator } from '../entity/userAdministrador.entity';
+import { GymUser } from '../gymUser.entity';
 
 @Injectable()
 export class gymServices {
@@ -13,6 +14,8 @@ export class gymServices {
     readonly gymRepository: Repository<Gym>,
     @InjectRepository(administrator)
     readonly administratorRepository: Repository<administrator>,
+    @InjectRepository(GymUser)
+    readonly gymUserRepository: Repository<GymUser>,
   ) {}
 
   async verifyDatasGym(
@@ -73,11 +76,18 @@ export class gymServices {
     identification: string,
     nameAdministrador: string,
     password: string,
+    nombreGym: string,
   ) {
     const verifyUserGym = await this.administratorRepository.findOne({
       where: [{ identification }, { email }],
     });
 
+    const verifyGym = await this.gymRepository.findOne({
+      where: { name: nombreGym },
+    });
+    if (verifyGym) {
+      throw new BadRequestException('Ya existe ese nombre de gymnasio');
+    }
     if (verifyUserGym) {
       throw new BadRequestException(
         'Ya existe un administrador con esa identificación o correo',
@@ -99,6 +109,28 @@ export class gymServices {
 
     await this.administratorRepository.save(createUserGym);
 
-    return 'Administrador creado exitosamente';
+    const insertResult = await this.gymRepository
+      .createQueryBuilder()
+      .insert()
+      .into('gym')
+      .values({
+        name: nombreGym,
+        font: "Roboto', sans-serif",
+        primaryColor: '#ff6f00',
+        secondaryColor: '#1e1e1e',
+      })
+      .returning(['id'])
+      .execute();
+
+    const gymId = insertResult.raw[0].id;
+
+    const assignUserToGym = await this.gymUserRepository.create({
+      gym: { id: gymId },
+      user: { identification: identification },
+    });
+    await this.gymUserRepository.save(assignUserToGym);
+    return assignUserToGym;
+
+    return 'Administrador y gimnasio creado exitosamente';
   }
 }

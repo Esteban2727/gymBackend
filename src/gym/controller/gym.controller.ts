@@ -64,6 +64,7 @@ export class GymController {
       identification,
       nameAdministrador,
       password,
+      nombreGym
     } = createGymDto;
 
     const createUserGym = await this.gymServices.CreateUserAdministrator(
@@ -73,6 +74,7 @@ export class GymController {
       identification,
       nameAdministrador,
       password,
+      nombreGym
     );
 
     return createUserGym
