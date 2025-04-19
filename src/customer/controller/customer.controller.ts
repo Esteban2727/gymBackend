@@ -22,14 +22,18 @@ import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 export class CustomerController {
   constructor(private readonly CustomerService: CustomerService) {}
 
-  @Post('create/:idgym')
-  async CreateCustomer(
-    @Body() userdto: registerDTO,
-    @Param('idgym') idgym: string,
-  ) {
-    console.log(idgym);
-    const { cellphone, email, gender, identification, password, username } =
-      userdto;
+  @Post('create')
+  async CreateCustomer(@Body() userdto: registerDTO) {
+    
+    const {
+      cellphone,
+      email,
+      gender,
+      identification,
+      password,
+      username,
+      idgym,
+    } = userdto;
     const sendDataToService = await this.CustomerService.createCustomer(
       cellphone,
       email,
