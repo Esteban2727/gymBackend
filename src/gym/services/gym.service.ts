@@ -75,7 +75,7 @@ export class gymServices {
     password: string,
   ) {
     const verifyUserGym = await this.administratorRepository.findOne({
-      where: { identification: identification },
+      where: [{ identification: identification }, { email: email }],
     });
     if (verifyUserGym) {
       return 'Este administrador ya fue creado';
@@ -94,8 +94,8 @@ export class gymServices {
       cellphone: cellphone,
     });
 
-    await this.administratorRepository.save(createUserGym)
-    
-    return "Administrador creado exitosamente"
+    await this.administratorRepository.save(createUserGym);
+
+    return 'Administrador creado exitosamente';
   }
 }
