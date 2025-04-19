@@ -8,7 +8,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 import { AuthModule } from './auth/auth.module';
 import { CustomerModule } from './customer/customer.module';
-import { UploadsModule } from './uploadFiles/uploads.module'; 
+import { UploadsModule } from './uploadFiles/uploads.module';
 
 import { User } from './auth/entity/user.entity';
 import { GeneratePdfModule } from './pdf/pdf.module';
@@ -20,7 +20,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { Subscription } from './subcription/Entity/subcription.entity';
 import { subcriptionModule } from './subcription/subcription.module';
 import { GateWayModule } from './gateways/gateway.module';
-
 
 import { MuscleGroup } from './groupMuscle/Entity/muscleGroup.entity';
 import { Exercise } from './exercises/Entity/exercise.entity';
@@ -36,6 +35,7 @@ import { RoutineTrainer } from './rutine/routineTrainer';
 import { routineMOdule } from './rutine/routine.module';
 import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
 import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGroupMuscular.module';
+import { administrator } from './gym/entity/userAdministrador.entity';
 
 @Module({
   imports: [
@@ -52,13 +52,12 @@ import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGro
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
         synchronize: true,
-        
+
         ssl: {
-          rejectUnauthorized: false, 
-        }, 
+          rejectUnauthorized: false,
+        },
       }),
     }),
-    
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -71,14 +70,28 @@ import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGro
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads', 
+      serveRoot: '/uploads',
     }),
 
     ScheduleModule.forRoot(),
 
-    TypeOrmModule.forFeature([User, Gym, GymUser, Subscription,
-      MuscleGroup,Exercise,ExerciseTrainingType,TrainingType,
-      ExerciseMuscleGroup,Customer,Trainer,Routine,RoutineExercise,RoutineTrainer]),
+    TypeOrmModule.forFeature([
+      User,
+      Gym,
+      GymUser,
+      Subscription,
+      MuscleGroup,
+      Exercise,
+      ExerciseTrainingType,
+      TrainingType,
+      ExerciseMuscleGroup,
+      Customer,
+      Trainer,
+      Routine,
+      RoutineExercise,
+      RoutineTrainer,
+      administrator
+    ]),
     AuthModule,
     CustomerModule,
     UploadsModule,
@@ -89,11 +102,10 @@ import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGro
     subcriptionModule,
     GateWayModule,
     routineMOdule,
-  TrainerModule,
-  groupMuscleModule,
-  exerciseGroupMuscularModule
-    
+    TrainerModule,
+    groupMuscleModule,
+    exerciseGroupMuscularModule,
   ],
-  providers: []
+  providers: [],
 })
 export class AppModule {}

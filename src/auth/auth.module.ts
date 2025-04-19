@@ -14,6 +14,7 @@ import { LoginController } from './controller/login.controller';
 import { RecoverPasswordController } from './controller/recoverPassword.controller';
 import { MailModule } from '../mail/mail.module';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { Subscription } from 'src/subcription/Entity/subcription.entity';
     loginServices,
     RecoverPasswordServices,
     JwtStrategy,
+    MailService
   ],
   exports:[JwtStrategy]
 })

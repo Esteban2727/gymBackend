@@ -1,48 +1,46 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, DeleteDateColumn, PrimaryColumn, OneToMany, OneToOne, JoinColumn, TableInheritance } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  PrimaryColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+  TableInheritance,
+} from 'typeorm';
 import { GymUser } from '../../gym/gymUser.entity';
 
-
-
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'type',default: 'Administrator' } })
+@TableInheritance({
+  column: { type: 'varchar', name: 'type', default: 'Administrator' },
+})
 export class User {
-
-  @PrimaryColumn({name:"identification"})
-  identification:string
+  @PrimaryColumn({ name: 'identification' })
+  identification: string;
 
   @Column({ unique: true })
   username: string;
- @Column({default:null})
-  gender:string
+  @Column({ default: null })
+  gender: string;
   @Column()
   password: string;
   @Column()
   cellphone: string;
   @Column()
   email: string;
-  @Column({default:"Administrator"})
+  @Column({ default: 'Administrator' })
   rol: string;
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   profilePicture: string;
 
-  @CreateDateColumn() 
-  createdAt: Date; 
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @DeleteDateColumn({ nullable: true }) 
-  deletedAt: Date | null
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 
-
-  
-   @OneToMany(() => GymUser, (gymUser) => gymUser.user)
-   gymUsers: GymUser[]
-
-
-
-   
-
-   
+  @OneToMany(() => GymUser, (gymUser) => gymUser.user)
+  gymUsers: GymUser[];
 }
-
-
-
-

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from '../Entity/subcription.entity';
 import { Cron } from '@nestjs/schedule';
+import { Customer } from 'src/customer/customer.entity';
 
 
 @Injectable()
@@ -38,6 +39,7 @@ export class SubscriptionService {
    async decreaseRemainingDays() {
      console.log('Disminuyendo días restantes de suscripciones...');
  
+  
      const subscriptions = await this.subscriptionRepository.find();
      
      for (const sub of subscriptions) {
@@ -56,7 +58,7 @@ export class SubscriptionService {
 
     const subscriptions = await this.subscriptionRepository.find();
     for (const sub of subscriptions) {
-      if (sub.remainingDays <= 30) {
+      if (sub.remainingDays <= 5) {
         console.log("pocos dias restantes");
        
       }
@@ -66,19 +68,26 @@ export class SubscriptionService {
   async checkSubscriptionAlert() {
     console.log('dias restantes');
 const arreglo=[]
-    const subscriptions = await this.subscriptionRepository.find();
- console.log(subscriptions)
-    for (const sub of subscriptions) {
-      if (sub.remainingDays <= 30) {
-        arreglo.push(sub)
-      }
+    //const subscriptions = await this.subscriptionRepository.find();
+ const subscription = await this.subscriptionRepository.createQueryBuilder()
+ 
+ .from(Subscription,"sub")
+ .select("sub", "cs")
+ .leftJoinAndSelect(Customer, "cs", "cs.identification = sub.customerIdentification")
+ .where("sub.remainingDays < :value",{value:5})
+ .getMany()
+ console.log(subscription)
+    // for (const sub of subscriptions) {
+    //   if (sub.remainingDays <= 30) {
+    //     arreglo.push(sub)
+    //   }
       
-    }
-    if (arreglo.length == 0){
-      return "no hay personas que les falten menos de 5 dias"
-    }
+    // }
+    // if (arreglo.length == 0){
+    //   return "no hay personas que les falten menos de 5 dias"
+    // }
 
-    return  arreglo
+    return  subscription
 
   }
 

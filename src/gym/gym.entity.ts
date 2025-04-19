@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn, CreateDateColumn } from 'typeorm';
 import { GymUser } from './gymUser.entity';
 
 @Entity()
@@ -20,6 +20,12 @@ export class Gym {
 
   @Column({ default: 'Arial' })
   font: string;
+
+  @CreateDateColumn() 
+    createdAt: Date; 
+  
+  @DeleteDateColumn({ nullable: true }) 
+    deletedAt: Date | null
 
   @OneToMany(() => GymUser, (gymUser) => gymUser.gym)
   gymUsers: GymUser[];

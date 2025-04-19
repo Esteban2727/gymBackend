@@ -4,23 +4,37 @@ import { RegisterService } from '../services/register.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('register')
-@ApiTags('Register') 
+@ApiTags('Register')
 export class RegisterController {
   constructor(private readonly registerService: RegisterService) {}
-
   @Post()
-  @ApiOperation({ summary: 'Register a new user', description: 'Creates a new user account with the provided details.' })
-  @ApiResponse({ status: 201, description: 'User registered successfully', schema: {
-    example: {
-      id: "123456",
-      username: "JohnDoe",
-      email: "johndoe@example.com",
-      role: "cliente"
-    }
-  }})
+  @ApiOperation({
+    summary: 'Register a new user',
+    description: 'Creates a new user account with the provided details.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully',
+    schema: {
+      example: {
+        id: '123456',
+        username: 'JohnDoe',
+        email: 'johndoe@example.com',
+        role: 'cliente',
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   async register(@Body() registerDto: registerDTO) {
-    const { identification, email, cellphone, password, username, rol ,gender} = registerDto;
+    const {
+      identification,
+      email,
+      cellphone,
+      password,
+      username,
+      rol,
+      gender,
+    } = registerDto;
     const saveDatas = await this.registerService.register(
       identification,
       username,
@@ -28,9 +42,9 @@ export class RegisterController {
       password,
       cellphone,
       rol,
-      gender
+      gender,
     );
-    console.log("entro");
+    console.log('entro');
     return saveDatas;
   }
 }

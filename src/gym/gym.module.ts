@@ -12,28 +12,26 @@ import { GymUserServices } from './services/gymUser.service';
 import { GymUser } from './gymUser.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { administrator } from './entity/userAdministrador.entity';
+
 @Module({
   imports: [
     ConfigModule, // Carga las variables de entorno
-         PassportModule,
-         JwtModule.registerAsync({
-           imports: [ConfigModule],
-           inject: [ConfigService],
-           useFactory: async (configService: ConfigService) => ({
-             secret: configService.get<string>('JWT_SECRET'),
-             signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h' },
-           }),
-         }),
-    TypeOrmModule.forFeature([Gym,GymUser]),
-    MailModule,  
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h',
+        },
+      }),
+    }),
+    TypeOrmModule.forFeature([Gym, GymUser, administrator]),
+    MailModule,
   ],
-  controllers: [
-      GymController,
-      GymUserController
-  ],
-  providers: [
-gymServices,
-GymUserServices
-  ],
+  controllers: [GymController, GymUserController],
+  providers: [gymServices, GymUserServices],
 })
 export class GymModule {}

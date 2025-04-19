@@ -1,3 +1,4 @@
+import { isBoolean } from "class-validator"
 import {rolEnum} from "../enum/rol.enum"
 export const validateDatasMessages={
 
@@ -67,6 +68,10 @@ difficulty_level:{
 },
 equipment:{
     isString: 'the equipment  is string',
+    isNotEmpty: 'You cant leave this field empty',
+},
+is_active:{
+    isBoolean:" no es un boolean el dato",
     isNotEmpty: 'You cant leave this field empty',
 }
 

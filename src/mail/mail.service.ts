@@ -24,4 +24,13 @@ export class MailService {
     });
     return(resetUrl)
   }
+
+  async sendEmail (email:string, html:string, subject:string){
+    await this.transporter.sendMail({
+      from: '"Administración " <soporte@example.com>',
+      to: email,
+      subject: subject,
+      html: html
+    });
+  }
 }
