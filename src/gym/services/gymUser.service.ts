@@ -13,10 +13,13 @@ export class GymUserServices {
   ) {}
 
   async userAssociateToGym(gymId: string) {
-    const SearchUserInGym = await this.gymUserRepository.find({
-      where: { gym: { id: gymId } },
-      relations: ['user'],
-    });
+    const SearchUserInGym = await this.gymUserRepository
+      .createQueryBuilder('gymUser')
+      .innerJoinAndSelect('gymUser.user', 'user')
+      .innerJoin('gymUser.gym', 'gym')
+      .where('gym.id = :gymId', { gymId })
+      .andWhere('user.rol != :rol', { rol: 'administrador' })
+      .getMany();
     console.log(SearchUserInGym);
     return SearchUserInGym;
   }

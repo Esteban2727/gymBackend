@@ -35,13 +35,47 @@ export class gymServices {
     console.log(verifyExistringGym, 11);
     const gym = await this.gymRepository.create({
       font: font,
-      logoUrl: logoUrl,
+      logo: logoUrl,
       name: name,
-      primaryColor: primaryColor,
-      secondaryColor: secondaryColor,
+      primary: primaryColor,
+      secondary: secondaryColor,
     });
     await this.gymRepository.save(gym);
     return false;
+  }
+
+  async changeGym(
+    id: string,
+    font: string,
+    logo: any,
+    primary: string,
+    secondary: string,
+    third: string,
+    fourth: string,
+    fontFamily: string,
+  ) {
+    const verifyGym = await this.gymRepository.findOne({
+      where: { id: id },
+    });
+    if (!verifyGym) {
+      new BadRequestException('dont exist that gym');
+    }
+    const updateGym = await this.gymRepository
+      .createQueryBuilder('gym')
+      .update(Gym)
+      .set({
+        font: font,
+        logo: logo,
+        primary: primary,
+        secondary: secondary,
+        third: third,
+        fourth: fourth,
+        fontFamily: fontFamily,
+      })
+      .where('gym.id = :id', { id })
+      .execute();
+
+    return 'done';
   }
 
   async deleteGymServices(id: string) {
@@ -66,6 +100,13 @@ export class gymServices {
 
   async getActiveGym() {
     const searchActivedGym = await this.gymRepository.find();
+    return searchActivedGym;
+  }
+
+  async getActiveGymByid(id: string) {
+    const searchActivedGym = await this.gymRepository.findOne({
+      where: { id: id },
+    });
     return searchActivedGym;
   }
 

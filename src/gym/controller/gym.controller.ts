@@ -1,8 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { GymDto } from '../DTO/gym.dto';
 import { gymServices } from '../services/gym.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateGymDto } from '../DTO/createGym.dto';
+import path from 'path';
 
 @Controller('gym')
 @ApiTags('Gym')
@@ -23,18 +32,35 @@ export class GymController {
   })
   @ApiResponse({ status: 400, description: 'Invalid gym data' })
   async SaveGYM(@Body() gymDto: GymDto) {
-    const { font, logoUrl, name, primaryColor, secondaryColor } = gymDto;
+    const { font, logo, name, primary, secondary } = gymDto;
     const VerifyGym = await this.gymServices.verifyDatasGym(
       font,
-      logoUrl,
+      logo,
       name,
-      primaryColor,
-      secondaryColor,
+      primary,
+      secondary,
     );
     if (!VerifyGym) {
       return { message: 'Gym created successfully' };
     }
     return VerifyGym;
+  }
+
+  @Patch(':id')
+  async changeValuesGym(@Param('id') id: string, @Body() gymDto: GymDto) {
+    const { font, logo, primary, secondary, third, fourth, fontFamily } =
+      gymDto;
+    const changeValuesOfGym = await this.gymServices.changeGym(
+      id,
+      font,
+      logo,
+      primary,
+      secondary,
+      third,
+      fourth,
+      fontFamily,
+    );
+    return changeValuesOfGym;
   }
 
   @Delete('delete/:id')
@@ -55,7 +81,13 @@ export class GymController {
     return getActiveGym;
   }
 
-  @Post("create")
+  @Get('getGym/:id')
+  async getGymById(@Param('id') id: string) {
+    const getActiveGymByid = await this.gymServices.getActiveGymByid(id);
+    return getActiveGymByid;
+  }
+
+  @Post('create')
   async CreateGym(@Body() createGymDto: CreateGymDto) {
     const {
       cellphone,
@@ -64,7 +96,7 @@ export class GymController {
       identification,
       nameAdministrador,
       password,
-      nombreGym
+      nombreGym,
     } = createGymDto;
 
     const createUserGym = await this.gymServices.CreateUserAdministrator(
@@ -74,9 +106,9 @@ export class GymController {
       identification,
       nameAdministrador,
       password,
-      nombreGym
+      nombreGym,
     );
 
-    return createUserGym
+    return createUserGym;
   }
 }

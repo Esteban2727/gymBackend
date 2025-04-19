@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  DeleteDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { GymUser } from './gymUser.entity';
 
 @Entity()
@@ -10,22 +17,31 @@ export class Gym {
   name: string;
 
   @Column({ nullable: true })
-  logoUrl: string;
+  logo: string;
 
   @Column({ default: '#ff5733' })
-  primaryColor: string;
+  primary: string;
 
   @Column({ default: '#333' })
-  secondaryColor: string;
+  secondary: string;
 
   @Column({ default: 'Arial' })
   font: string;
 
-  @CreateDateColumn() 
-    createdAt: Date; 
-  
-  @DeleteDateColumn({ nullable: true }) 
-    deletedAt: Date | null
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Column({ nullable: true })
+  fourth: string;
+
+  @Column({ nullable: true })
+  third: string;
+
+  @Column({ nullable: true })
+  fontFamily: string;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 
   @OneToMany(() => GymUser, (gymUser) => gymUser.gym)
   gymUsers: GymUser[];
