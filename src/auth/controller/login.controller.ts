@@ -62,13 +62,14 @@ export class LoginController {
       refreshToken: refresh_token,
       rol: user.rol,
     };
-
+    const gymId = user.gymUsers?.[0]?.gym?.id ?? null;
     return {
       message: 'Login successful',
       user: {
         id: user.identification,
         email: user.email,
         rol: user.rol,
+        gymId: gymId,
       },
       access_token,
       refresh_token,
