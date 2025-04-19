@@ -19,7 +19,7 @@ export class gymServices {
   ) {}
 
   async verifyDatasGym(
-    font: string,
+
     logoUrl: string,
     name: string,
     primaryColor: string,
@@ -34,7 +34,6 @@ export class gymServices {
     }
     console.log(verifyExistringGym, 11);
     const gym = await this.gymRepository.create({
-      font: font,
       logo: logoUrl,
       name: name,
       primary: primaryColor,
@@ -46,7 +45,7 @@ export class gymServices {
 
   async changeGym(
     id: string,
-    font: string,
+
     logo: any,
     primary: string,
     secondary: string,
@@ -64,7 +63,6 @@ export class gymServices {
       .createQueryBuilder('gym')
       .update(Gym)
       .set({
-        font: font,
         logo: logo,
         primary: primary,
         secondary: secondary,

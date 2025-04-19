@@ -32,9 +32,8 @@ export class GymController {
   })
   @ApiResponse({ status: 400, description: 'Invalid gym data' })
   async SaveGYM(@Body() gymDto: GymDto) {
-    const { font, logo, name, primary, secondary } = gymDto;
+    const { logo, name, primary, secondary } = gymDto;
     const VerifyGym = await this.gymServices.verifyDatasGym(
-      font,
       logo,
       name,
       primary,
@@ -48,11 +47,9 @@ export class GymController {
 
   @Patch(':id')
   async changeValuesGym(@Param('id') id: string, @Body() gymDto: GymDto) {
-    const { font, logo, primary, secondary, third, fourth, fontFamily } =
-      gymDto;
+    const { logo, primary, secondary, third, fourth, fontFamily } = gymDto;
     const changeValuesOfGym = await this.gymServices.changeGym(
       id,
-      font,
       logo,
       primary,
       secondary,
