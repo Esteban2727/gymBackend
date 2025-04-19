@@ -25,8 +25,6 @@ export class Gym {
   @Column({ default: '#333' })
   secondary: string;
 
-  @Column({ default: 'Arial' })
-  font: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { validateDatasMessages } from 'src/messages/messages';
-import { Column } from 'typeorm';
 
 export class GymDto {
   @IsOptional()
@@ -10,25 +9,22 @@ export class GymDto {
   @IsNotEmpty({ message: validateDatasMessages.primaryColor.isNotEmpty })
   primary: string;
 
+  @IsOptional()
   logo: string;
 
   @IsString({ message: validateDatasMessages.secondaryColor.isString })
   @IsNotEmpty({ message: validateDatasMessages.secondaryColor.isNotEmpty })
   secondary: string;
 
-  @IsString({ message: validateDatasMessages.font.isString })
-  @IsNotEmpty({ message: validateDatasMessages.font.isNotEmpty })
-  font: string;
-
-  @IsString({ message: "debe ser un string el fourth" })
-  @IsNotEmpty({ message: "debe tener un color el fourth" })
+  @IsString({ message: 'debe ser un string el fourth' })
+  @IsNotEmpty({ message: 'debe tener un color el fourth' })
   fourth: string;
 
-  @IsString({ message: "debe ser un string el third" })
-  @IsNotEmpty({ message: "no puede estar vacio el third" })
+  @IsString({ message: 'debe ser un string el third' })
+  @IsNotEmpty({ message: 'no puede estar vacio el third' })
   third: string;
 
-  @IsString({ message: "debe ser un string el fontFamily" })
-  @IsNotEmpty({ message: "no puede estar vacio el fontFamily" })
+  @IsString({ message: 'debe ser un string el fontFamily' })
+  @IsNotEmpty({ message: 'no puede estar vacio el fontFamily' })
   fontFamily: string;
 }
