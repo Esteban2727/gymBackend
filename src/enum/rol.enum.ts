@@ -1,6 +1,6 @@
 export enum rolEnum{
-  admin="administrator",
-  entrenador="personal training",
+  admin="administrador",
+  entrenador="trainer",
   cliente="customer",
   recepcionista="receptionist",
 }

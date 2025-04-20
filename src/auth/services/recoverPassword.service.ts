@@ -20,6 +20,9 @@ export class RecoverPasswordServices {
   ) {}
 
   async forgotPassword(email: string) {
+    if (!email) {
+      return 'pon tu correo electrónico';
+    }
     console.log(email);
     const user = await this.userRepository.findOne({
       where: { email: email },
@@ -35,13 +38,13 @@ export class RecoverPasswordServices {
       { secret: process.env.JWT_SECRET, expiresIn: '1h' },
     );
 
-   const save= await this.mailService.sendPasswordReset(user.email, token);
+    const save = await this.mailService.sendPasswordReset(user.email, token);
 
     return save;
   }
 
-   async resetPassword(token: string, password: string) {
-    console.log(password)
+  async resetPassword(token: string, password: string) {
+    console.log(password);
     let payload;
     try {
       payload = this.jwtService.verify(token);
@@ -62,5 +65,5 @@ export class RecoverPasswordServices {
     await this.userRepository.save(user);
 
     return { message: 'Contraseña restablecida exitosamente' };
-  } 
+  }
 }

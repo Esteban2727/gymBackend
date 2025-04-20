@@ -14,7 +14,7 @@ import { GymUser } from '../../gym/gymUser.entity';
 
 @Entity()
 @TableInheritance({
-  column: { type: 'varchar', name: 'type', default: 'Administrator' },
+  column: { type: 'varchar', name: 'type', default: 'Administrador' },
 })
 export class User {
   @PrimaryColumn({ name: 'identification' })
@@ -30,7 +30,7 @@ export class User {
   cellphone: string;
   @Column()
   email: string;
-  @Column({ default: 'Administrator' })
+  @Column({ default: 'Administrador' })
   rol: string;
   @Column({ nullable: true })
   profilePicture: string;

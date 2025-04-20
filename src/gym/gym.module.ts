@@ -13,6 +13,7 @@ import { GymUser } from './gymUser.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { administrator } from './entity/userAdministrador.entity';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { administrator } from './entity/userAdministrador.entity';
     MailModule,
   ],
   controllers: [GymController, GymUserController],
-  providers: [gymServices, GymUserServices],
+  providers: [gymServices, GymUserServices,MailService],
 })
 export class GymModule {}

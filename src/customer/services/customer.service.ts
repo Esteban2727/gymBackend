@@ -5,6 +5,8 @@ import { Customer } from '../customer.entity';
 import * as bcrypt from 'bcrypt';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
+import { MailService } from 'src/mail/mail.service';
+import { Gym } from 'src/gym/gym.entity';
 
 export class CustomerService {
   constructor(
@@ -16,6 +18,9 @@ export class CustomerService {
     readonly subscriptionRepository: Repository<Subscription>,
     @InjectRepository(GymUser)
     readonly GymuserRepository: Repository<GymUser>,
+    private readonly sendMail: MailService,
+    @InjectRepository(Gym)
+    readonly GymRepository: Repository<Gym>,
   ) {}
   async GetCustomerById(ident: string) {
     const bringDatas = await this.userReposotory.find({
@@ -34,14 +39,17 @@ export class CustomerService {
     username: string,
     idgym: string,
   ) {
+    const searchDataInformation = await this.GymRepository.findOne({
+      where: { id: idgym },
+    });
+    if (!searchDataInformation) {
+      return 'ese gymnasio no existe';
+    }
+
     console.log('entro');
     console.log(username, identification, email);
     const verifyExistingCustomer = await this.userReposotory.findOne({
-      where: [
-        { identification: identification },
-        { username: username },
-        { email: email },
-      ],
+      where: [{ identification: identification }, { email: email }],
       withDeleted: true,
     });
     console.log(verifyExistingCustomer, 'sss');
@@ -72,6 +80,30 @@ export class CustomerService {
         customer: { identification: identification },
       });
     await this.subscriptionRepository.save(AssociateCustomerToSubscription);
+
+    const { name, primary, secondary, third, fourth, fontFamily } =
+      searchDataInformation;
+
+    const subject = 'usuario creado, bienvenido';
+    const html = `
+  <div style="font-family: ${fontFamily}, sans-serif; background-color: ${secondary}; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; color: ${third}; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+    <h1 style="color: ${primary}; font-size: 24px;">Bienvenido al gimnasio ${name} 🏋️‍♂️</h1>
+
+    <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="GIF Motivacional"
+      style="width: 100%; border-radius: 8px; margin-top: 20px; border: 2px solid ${primary};" />
+
+    <hr style="border: 1px dashed ${primary}; margin: 20px 0;" />
+
+    <p style="font-size: 16px;"><strong>Correo electrónico:</strong> <span style="color: ${fourth};">${email}</span></p>
+    <p style="font-size: 16px;"><strong>Contraseña:</strong> <span style="color: ${fourth};">${password}</span></p>
+    <p style="font-size: 16px;"><strong>Celular:</strong> <span style="color: ${fourth};">${cellphone}</span></p>
+
+    <hr style="border: 1px dashed ${primary}; margin: 20px 0;" />
+
+    <p style="font-size: 14px; color: ${third};">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
+  </div>
+`;
+    await this.sendMail.sendEmail(email, html, subject);
     return 'created succefully';
   }
 

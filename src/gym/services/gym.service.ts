@@ -6,6 +6,7 @@ import { IsNull, Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { administrator } from '../entity/userAdministrador.entity';
 import { GymUser } from '../gymUser.entity';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class gymServices {
@@ -16,10 +17,10 @@ export class gymServices {
     readonly administratorRepository: Repository<administrator>,
     @InjectRepository(GymUser)
     readonly gymUserRepository: Repository<GymUser>,
+    private readonly sendMail: MailService,
   ) {}
 
   async verifyDatasGym(
-
     logoUrl: string,
     name: string,
     primaryColor: string,
@@ -168,8 +169,27 @@ export class gymServices {
       user: { identification: identification },
     });
     await this.gymUserRepository.save(assignUserToGym);
+
+    const subject = 'usuario creado, bienvenido';
+    const html = `
+  <div style="font-family: 'Roboto', sans-serif; background-color: #1e1e1e; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+    <h1 style="color: #ff6f00; font-size: 24px;">Bienvenido al gimnasio, administrador ${nameAdministrador} 🏋️‍♂️</h1>
+
+    <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="GIF Motivacional" style="width: 100%; border-radius: 8px; margin-top: 20px; border: 2px solid #ff6f00;" />
+
+    <hr style="border: 1px dashed #ff6f00; margin: 20px 0;" />
+
+    <p style="font-size: 16px;"><strong>Correo electrónico:</strong> <span style="color: #ffb84d;">${email}</span></p>
+    <p style="font-size: 16px;"><strong>Contraseña:</strong> <span style="color: #ffb84d;">${password}</span></p>
+    <p style="font-size: 16px;"><strong>Celular:</strong> <span style="color: #ffb84d;">${cellphone}</span></p>
+
+    <hr style="border: 1px dashed #ff6f00; margin: 20px 0;" />
+
+    <p style="font-size: 14px; color: #cccccc;">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
+  </div>
+`;
+    await this.sendMail.sendEmail(email, html, subject);
     return assignUserToGym;
 
-    return 'Administrador y gimnasio creado exitosamente';
-  }
+}
 }

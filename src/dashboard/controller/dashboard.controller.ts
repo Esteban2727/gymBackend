@@ -11,13 +11,11 @@ export class DashboardController {
     return this.dashboardServices.getDatasInformation(value);
   }
 
-  @Get('activeUser/:id') // Agregamos ":id" para recibir el parámetro correctamente
+  @Get('activeUser/:id') 
   async getActiveUser(@Param('id') id: string) {
-    console.log()
-    const save= await this.dashboardServices.getDatasinformationActive(id);
-    console.log(save)
-    return save
+    console.log();
+    const save = await this.dashboardServices.getDatasinformationActive(id);
+    console.log(save);
+    return save;
   }
-
-
 }
