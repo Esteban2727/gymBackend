@@ -36,7 +36,7 @@ export class TrainerServices {
       where: [
         { email: email },
         { identification: identification },
-        { username: username },
+
       ],
     });
 
