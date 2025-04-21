@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { administrator } from '../entity/userAdministrador.entity';
 import { GymUser } from '../gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
+import { User } from 'src/auth/entity/user.entity';
 
 @Injectable()
 export class gymServices {
@@ -85,6 +86,11 @@ export class gymServices {
       return 'ese gimnasio no existe en la base de datos';
     }
     await this.gymRepository.softRemove(verifyGym);
+    const verifyGymUser = await this.gymUserRepository.find({
+      where: { gym: { id: id } },
+    });
+
+    await this.gymUserRepository.softRemove(verifyGymUser);
     return 'deleted';
   }
 
@@ -98,7 +104,14 @@ export class gymServices {
   }
 
   async getActiveGym() {
-    const searchActivedGym = await this.gymRepository.find();
+    const searchActivedGym = await this.gymRepository
+      .createQueryBuilder('gym')
+      .select(['gym.name', 'gym.logo', 'us.username', 'us.email', 'us.rol'])
+      .innerJoin(GymUser, 'gs', 'gs.gymId = gym.id')
+      .innerJoin(User, 'us', 'us.identification = gs.userIdentification')
+      .groupBy('gym.name , gym.logo, us.username,us.email,us.rol  ')
+      .getRawMany();
+
     return searchActivedGym;
   }
 
@@ -190,6 +203,5 @@ export class gymServices {
 `;
     await this.sendMail.sendEmail(email, html, subject);
     return assignUserToGym;
-
-}
+  }
 }

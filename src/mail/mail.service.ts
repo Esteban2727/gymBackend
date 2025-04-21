@@ -13,7 +13,7 @@ export class MailService {
   
   async sendPasswordReset(email: string, token: string) {
     console.log("llego aca")
-    const resetUrl = `${process.env.HOST}/recover-password/reset-password?token=${token}`;
+    const resetUrl = `${process.env.HOST}recover-password/reset-password?token=${token}`;
 
     await this.transporter.sendMail({
       from: '"Soporte" <soporte@example.com>',

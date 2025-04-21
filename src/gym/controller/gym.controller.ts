@@ -108,4 +108,6 @@ export class GymController {
 
     return createUserGym;
   }
+
+
 }
