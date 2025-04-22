@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Gym } from '../gym.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { administrator } from '../entity/userAdministrador.entity';
 import { GymUser } from '../gymUser.entity';
 import { MailService } from 'src/mail/mail.service';

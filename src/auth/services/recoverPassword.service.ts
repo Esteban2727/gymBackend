@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/entity/user.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { LoginDto } from '../DTO/login.dto';
 @Injectable()
 export class RecoverPasswordServices {

@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/entity/user.entity';
 import { Repository } from 'typeorm';
 import { Customer } from '../customer.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
