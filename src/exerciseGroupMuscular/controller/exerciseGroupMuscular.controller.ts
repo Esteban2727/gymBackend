@@ -3,16 +3,17 @@ import { ExerciseGroupMuscularServices } from "../services/exerciseGroupMuscular
 
 @Controller("groupMuscle")
 export class ExerciseGroupMuscularController {
-constructor(
-    private readonly ExerciseGroupMuscularServices:ExerciseGroupMuscularServices
-){}
+    constructor(private readonly exerciseGroupMuscularService: ExerciseGroupMuscularServices) {
+        
+    }
+@Get('getGroupMuscle')
+async getGrouoMuscle() {
+    const ExerciseGroupMuscularServices = await this.exerciseGroupMuscularService.getGroupMuscularServices();
+    return ExerciseGroupMuscularServices
 
-@Get()
-async getGroupMuscular(){
-    const getDataGroupMuscular= await this.ExerciseGroupMuscularServices.getAllDatasGroupMuscular()
-    console.log(getDataGroupMuscular)
-    return getDataGroupMuscular
 }
+
+
 
 
 }

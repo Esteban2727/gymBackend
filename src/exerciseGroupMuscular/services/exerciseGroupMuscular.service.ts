@@ -5,17 +5,10 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class ExerciseGroupMuscularServices{
-constructor(
-    @InjectRepository(ExerciseMuscleGroup)
-    readonly exerciseMuscleGroupRepository : Repository<ExerciseMuscleGroup>
-){
+    constructor() {
 
-
-    
-}
-async getAllDatasGroupMuscular(){
-
-    const getDataBaseExcerisMuscular= await this.exerciseMuscleGroupRepository.find()
-    return getDataBaseExcerisMuscular
+    }
+async getGroupMuscularServices(){
+    return 'respuesta'
 }
 }
