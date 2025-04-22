@@ -40,7 +40,7 @@ declare module 'express-session' {
 async function bootstrap() {
   try {
     const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-
+console.log("probadno")
     const uploadDir = './uploads';
     if (!existsSync(uploadDir)) {
       mkdirSync(uploadDir, { recursive: true });
