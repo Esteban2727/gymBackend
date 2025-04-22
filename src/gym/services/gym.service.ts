@@ -23,14 +23,13 @@ export class gymServices {
     readonly userRepository: Repository<User>,
     
   ) {}
-
   async verifyDatasGym(
     logoUrl: any,
     name: string,
     primaryColor: string,
     secondaryColor: string,
   ) {
-    console.log(name);
+    console.log("cambios");
     const verifyExistringGym = await this.gymRepository.findOne({
       where: [{ name: name }],
     });
