@@ -80,10 +80,10 @@ export class gymServices {
     return 'done';
   }
 
-  async deleteGymServices(id: string) {
+  async deleteGymServices(name: string) {
     // Verificar si el gimnasio existe
     const verifyGym = await this.gymRepository.findOne({
-      where: { id },
+      where: { name:name },
       relations: ['gymUsers', 'gymUsers.user'], // aseguramos que cargue los usuarios relacionados
     });
   
@@ -131,9 +131,9 @@ export class gymServices {
     return searchActivedGym;
   }
 
-  async getActiveGymByid(id: string) {
+  async getActiveGymByid(gym: string) {
     const searchActivedGym = await this.gymRepository.findOne({
-      where: { id: id },
+      where: { name: gym },
     });
     return searchActivedGym;
   }

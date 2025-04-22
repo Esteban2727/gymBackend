@@ -83,9 +83,10 @@ export class GymController {
     return changeValuesOfGym;
   }
 
-  @Delete('delete/:id')
-  async deleteGym(@Param('id') id: string) {
-    const deleteGym = await this.gymServices.deleteGymServices(id);
+  @Delete('delete')
+  async deleteGym(@Param("name") name: string) {
+    console.log(name)
+    const deleteGym = await this.gymServices.deleteGymServices(name);
     return deleteGym;
   }
 

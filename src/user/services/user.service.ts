@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from '../../auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { Gym } from 'src/gym/gym.entity';
@@ -13,7 +13,9 @@ export class UserService {
   ) {}
 
   async getAllUser(){
-    return await this.userRepository.find();
+    return await this.userRepository.find({
+      where:{ rol: Not('superadmin'),}
+    });
   }
   async getUserById(id: string) {
     return await this.userRepository.createQueryBuilder("us")
