@@ -47,7 +47,7 @@ export class GymController {
       ? await this.uploadService.uploadImage(file)
       : gymDto.logo;
 
-    const { name, primary, secondary } = gymDto;
+    const { name,logo, primary, secondary } = gymDto;
     const VerifyGym = await this.gymServices.verifyDatasGym(
       uploadedImage,
       name,
@@ -109,6 +109,7 @@ export class GymController {
 
   @Post('create')
   async CreateGym(@Body() createGymDto: CreateGymDto) {
+    console.log("anda aca")
     const {
       cellphone,
       email,

@@ -1,10 +1,9 @@
-import { Controller, Get, Param, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Body, Delete } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 
-@Controller('user') 
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
 
   @Get(':id')
   async getUserById(@Param('id') id: string) {
@@ -15,10 +14,13 @@ export class UserController {
   async allUser(@Param('id') id: string) {
     return await this.userService.getAllUser();
   }
-  
+
   @Patch(':id/profile-picture')
-  async updateProfilePicture(@Param('id') id: string, @Body('imageUrl') imageUrl: string) {
-    return await this.userService.updateProfilePicture(id, imageUrl);
+  async updateProfilePicture(
+    @Param('id') id: string,
+    @Body('imageUrl') imageUrl: string,
+  ) {
+    return await this.userService.updateProfilePicture(id, imageUrl)
   }
-  
+
 }

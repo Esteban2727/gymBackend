@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -62,4 +63,6 @@ export class TrainerController {
       updateData,
     );
   }
+
+
 }

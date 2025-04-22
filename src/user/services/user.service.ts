@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../auth/entity/user.entity';
+import { GymUser } from 'src/gym/gymUser.entity';
+import { Gym } from 'src/gym/gym.entity';
 
 @Injectable()
 export class UserService {
@@ -14,7 +16,12 @@ export class UserService {
     return await this.userRepository.find();
   }
   async getUserById(id: string) {
-    return await this.userRepository.findOne({ where: { identification:id } });
+    return await this.userRepository.createQueryBuilder("us")
+    .select(["us.username","us.cellphone","us.email","us.rol","us.profilePicture","us.gender","us.identification","gm.name"])
+    .where("us.identification = :value",{value:id})
+    .innerJoin(GymUser,"gu","gu.userIdentification = us.identification")
+    .innerJoin(Gym,"gm","gm.id = gu.gymId")
+    .getRawOne()
   }
 
  
@@ -27,4 +34,6 @@ export class UserService {
     await this.userRepository.save(user);
     return user;
   }
+
+
 }
