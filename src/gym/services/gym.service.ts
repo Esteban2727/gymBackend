@@ -8,6 +8,7 @@ import { administrator } from '../entity/userAdministrador.entity';
 import { GymUser } from '../gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/auth/entity/user.entity';
+import { Customer } from 'src/customer/customer.entity';
 
 @Injectable()
 export class gymServices {
@@ -220,4 +221,43 @@ export class gymServices {
     await this.sendMail.sendEmail(email, html, subject);
     return assignUserToGym;
   }
+
+  async getInformation() {
+    const getGymAndUser = await this.gymRepository
+      .createQueryBuilder("gm")
+      .select([
+        "gm.logo",
+        "gm.name",
+        "gm.createdAt",
+        "ad.username",
+      
+        `(SELECT COUNT(*) 
+          FROM gym_user gu 
+          INNER JOIN "user" u ON gu."userIdentification" = u."identification" 
+          WHERE gu."gymId" = gm.id AND u.rol = 'customer' AND gu."deletedAt" IS NULL AND u."deletedAt" IS NULL
+        ) AS "customerCount"`,
+  
+        // Contar 'trainers'
+        `(SELECT COUNT(*) 
+          FROM gym_user gu 
+          INNER JOIN "user" u ON gu."userIdentification" = u."identification" 
+          WHERE gu."gymId" = gm.id AND u.rol = 'Trainer' AND gu."deletedAt" IS NULL AND u."deletedAt" IS NULL
+        ) AS "trainerCount"`
+      ])
+      .innerJoin("gym_user", "gu", "gu.gymId = gm.id")
+      .innerJoin("user", "ad", "ad.identification = gu.userIdentification AND ad.rol = 'administrador'")
+      .where("gm.deletedAt IS NULL")
+      .andWhere("gu.deletedAt IS NULL")
+      .andWhere("ad.deletedAt IS NULL")
+      .groupBy("gm.id, gm.logo, gm.name, ad.username, gm.createdAt")
+
+      .orderBy("gm.createdAt", "ASC")
+      .getRawMany();
+  
+    return getGymAndUser;
+  }
+  
+  
+  
+
 }

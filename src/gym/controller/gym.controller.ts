@@ -133,4 +133,9 @@ export class GymController {
 
     return createUserGym;
   }
+
+  @Get("getAdminAndGym")
+  async getAdminAndGym(){
+    return await this.gymServices.getInformation()
+  }
 }
