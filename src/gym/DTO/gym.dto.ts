@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { validateDatasMessages } from 'src/messages/messages';
+import { Express } from 'express'
 
 export class GymDto {
   @IsOptional()
@@ -10,7 +11,7 @@ export class GymDto {
   primary: string;
 
   @IsOptional()
-  logo: string;
+  logo?: Express.Multer.File | string;
 
   @IsString({ message: validateDatasMessages.secondaryColor.isString })
   @IsNotEmpty({ message: validateDatasMessages.secondaryColor.isNotEmpty })

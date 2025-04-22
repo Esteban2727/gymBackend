@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, DeleteDateColumn } from 'typeorm';
 import { User } from '../auth/entity/user.entity';
 import { Gym } from './gym.entity';
 
@@ -16,4 +16,7 @@ export class GymUser {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

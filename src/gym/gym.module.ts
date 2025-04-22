@@ -14,6 +14,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { administrator } from './entity/userAdministrador.entity';
 import { MailService } from 'src/mail/mail.service';
+import { User } from 'src/auth/entity/user.entity';
+import { UploadService } from 'src/uploadFiles/services/upload.service';
 
 @Module({
   imports: [
@@ -29,10 +31,10 @@ import { MailService } from 'src/mail/mail.service';
         },
       }),
     }),
-    TypeOrmModule.forFeature([Gym, GymUser, administrator]),
+    TypeOrmModule.forFeature([Gym, GymUser, administrator,User]),
     MailModule,
   ],
   controllers: [GymController, GymUserController],
-  providers: [gymServices, GymUserServices,MailService],
+  providers: [gymServices, GymUserServices,MailService,UploadService],
 })
 export class GymModule {}

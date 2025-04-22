@@ -6,17 +6,24 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GymDto } from '../DTO/gym.dto';
 import { gymServices } from '../services/gym.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateGymDto } from '../DTO/createGym.dto';
 import path from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/uploadFiles/services/upload.service';
 
 @Controller('gym')
 @ApiTags('Gym')
 export class GymController {
-  constructor(private readonly gymServices: gymServices) {}
+  constructor(
+    private readonly gymServices: gymServices,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -31,10 +38,18 @@ export class GymController {
     },
   })
   @ApiResponse({ status: 400, description: 'Invalid gym data' })
-  async SaveGYM(@Body() gymDto: GymDto) {
-    const { logo, name, primary, secondary } = gymDto;
+  @UseInterceptors(FileInterceptor('logo'))
+  async SaveGYM(
+    @Body() gymDto: GymDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const uploadedImage = file
+      ? await this.uploadService.compressAndUpload(file)
+      : gymDto.logo;
+
+    const { name, primary, secondary } = gymDto;
     const VerifyGym = await this.gymServices.verifyDatasGym(
-      logo,
+      uploadedImage,
       name,
       primary,
       secondary,
@@ -46,11 +61,19 @@ export class GymController {
   }
 
   @Patch(':id')
-  async changeValuesGym(@Param('id') id: string, @Body() gymDto: GymDto) {
-    const { logo, primary, secondary, third, fourth, fontFamily } = gymDto;
+  @UseInterceptors(FileInterceptor('logo'))
+  async changeValuesGym(
+    @Param('id') id: string,
+    @Body() gymDto: GymDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const uploadedImage = file
+      ? await this.uploadService.compressAndUpload(file)
+      : gymDto.logo;
+    const { primary, secondary, third, fourth, fontFamily } = gymDto;
     const changeValuesOfGym = await this.gymServices.changeGym(
       id,
-      logo,
+      uploadedImage,
       primary,
       secondary,
       third,
@@ -108,6 +131,4 @@ export class GymController {
 
     return createUserGym;
   }
-
-
 }

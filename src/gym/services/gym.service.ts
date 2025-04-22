@@ -19,10 +19,13 @@ export class gymServices {
     @InjectRepository(GymUser)
     readonly gymUserRepository: Repository<GymUser>,
     private readonly sendMail: MailService,
+    @InjectRepository(User)
+    readonly userRepository: Repository<User>,
+    
   ) {}
 
   async verifyDatasGym(
-    logoUrl: string,
+    logoUrl: any,
     name: string,
     primaryColor: string,
     secondaryColor: string,
@@ -79,21 +82,35 @@ export class gymServices {
   }
 
   async deleteGymServices(id: string) {
+    // Verificar si el gimnasio existe
     const verifyGym = await this.gymRepository.findOne({
-      where: { id: id },
+      where: { id },
+      relations: ['gymUsers', 'gymUsers.user'], // aseguramos que cargue los usuarios relacionados
     });
+  
     if (!verifyGym) {
-      return 'ese gimnasio no existe en la base de datos';
+      return 'Ese gimnasio no existe en la base de datos';
     }
+  
+    // Obtener todos los usuarios relacionados al gimnasio a través de gymUser
+    const gymUsers = verifyGym.gymUsers;
+  
+    if (gymUsers && gymUsers.length > 0) {
+      const users = gymUsers.map(gymUser => gymUser.user);
+  
+      // Eliminamos los registros de gymUser
+      await this.gymUserRepository.softRemove(gymUsers);
+  
+      // Eliminamos los usuarios relacionados
+      await this.userRepository.softRemove(users);
+    }
+  
+    // Finalmente eliminamos el gimnasio
     await this.gymRepository.softRemove(verifyGym);
-    const verifyGymUser = await this.gymUserRepository.find({
-      where: { gym: { id: id } },
-    });
-
-    await this.gymUserRepository.softRemove(verifyGymUser);
-    return 'deleted';
+  
+    return 'Gimnasio, usuarios y relaciones eliminados correctamente';
   }
-
+  
   async getDeletedGym() {
     const searchDeletedGym = await this.gymRepository.find({
       withDeleted: true,
