@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as sharp from 'sharp';
 import cloudinary from '../cloudinary';
 import { v4 as uuid } from 'uuid';
 import * as fs from 'fs';
@@ -7,7 +6,7 @@ import * as path from 'path';
 
 @Injectable()
 export class UploadService {
-  async compressAndUpload(file: Express.Multer.File): Promise<string> {
+  async uploadImage(file: Express.Multer.File): Promise<string> {
     const filename = `${uuid()}.webp`;
     const outputPath = path.join(__dirname, '../../../uploads', filename);
 
@@ -15,19 +14,17 @@ export class UploadService {
       fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     }
 
-    // Comprimir imagen
-    await sharp(file.buffer)
-      .resize(800)
-      .webp({ quality: 70 })
-      .toFile(outputPath);
+    // Guardar la imagen en el sistema de archivos sin compresión
+    fs.writeFileSync(outputPath, file.buffer);
 
     // Subir a Cloudinary
     const result = await cloudinary.uploader.upload(outputPath, {
       folder: 'profile_pics',
     });
 
+    // Eliminar la imagen local después de subirla
     fs.unlinkSync(outputPath);
-  
+
     return result.secure_url;
   }
 }

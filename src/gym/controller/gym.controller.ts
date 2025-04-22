@@ -44,7 +44,7 @@ export class GymController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const uploadedImage = file
-      ? await this.uploadService.compressAndUpload(file)
+      ? await this.uploadService.uploadImage(file)
       : gymDto.logo;
 
     const { name, primary, secondary } = gymDto;
@@ -68,7 +68,7 @@ export class GymController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const uploadedImage = file
-      ? await this.uploadService.compressAndUpload(file)
+      ? await this.uploadService.uploadImage(file)
       : gymDto.logo;
     const { primary, secondary, third, fourth, fontFamily } = gymDto;
     const changeValuesOfGym = await this.gymServices.changeGym(

@@ -40,7 +40,7 @@ export class UploadController {
       throw new BadRequestException('No se recibió archivo');
     }
 
-    const imageUrl = await this.uploadService.compressAndUpload(file);
+    const imageUrl = await this.uploadService.uploadImage(file);
 
     // Aquí puedes actualizar la base de datos si lo necesitas:
     // await this.userService.updateProfilePicture(userId, imageUrl);
