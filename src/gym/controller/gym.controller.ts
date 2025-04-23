@@ -104,6 +104,7 @@ export class GymController {
 
   @Get('getGym/:id')
   async getGymById(@Param('id') id: string) {
+    console.log(id)
     const getActiveGymByid = await this.gymServices.getActiveGymByid(id);
     return getActiveGymByid;
   }

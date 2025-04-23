@@ -134,7 +134,7 @@ export class gymServices {
 
   async getActiveGymByid(gym: string) {
     const searchActivedGym = await this.gymRepository.findOne({
-      where: { name: gym },
+      where: { id: gym },
     });
     return searchActivedGym;
   }

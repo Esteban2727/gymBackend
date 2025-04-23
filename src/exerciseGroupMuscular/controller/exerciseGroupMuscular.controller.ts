@@ -7,12 +7,5 @@ constructor(
     private readonly ExerciseGroupMuscularServices:ExerciseGroupMuscularServices
 ){}
 
-@Get()
-async getGroupMuscular(){
-    const getDataGroupMuscular= await this.ExerciseGroupMuscularServices.getAllDatasGroupMuscular()
-    console.log(getDataGroupMuscular)
-    return getDataGroupMuscular
-}
-
 
 }

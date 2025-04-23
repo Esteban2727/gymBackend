@@ -13,9 +13,5 @@ constructor(
 
     
 }
-async getAllDatasGroupMuscular(){
 
-    const getDataBaseExcerisMuscular= await this.exerciseMuscleGroupRepository.find()
-    return getDataBaseExcerisMuscular
-}
 }
