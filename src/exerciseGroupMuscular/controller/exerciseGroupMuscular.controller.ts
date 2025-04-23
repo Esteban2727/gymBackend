@@ -11,12 +11,7 @@ async getGrouoMuscle() {
     const ExerciseGroupMuscularServices = await this.exerciseGroupMuscularService.getGroupMuscularServices();
     return ExerciseGroupMuscularServices
 
-<<<<<<< HEAD
-=======
+
+
 }
-
->>>>>>> e6932aca90728ec3bfd64506d557337e1f38e5d1
-
-
-
 }
