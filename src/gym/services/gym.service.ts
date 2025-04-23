@@ -149,7 +149,8 @@ export class gymServices {
     nombreGym: string,
   ) {
     const verifyUserGym = await this.administratorRepository.findOne({
-      where: [{ identification }, { email }],
+      where: [{ identification }, { email }, {deletedAt:null}],
+      
     });
 
     const verifyGym = await this.gymRepository.findOne({
