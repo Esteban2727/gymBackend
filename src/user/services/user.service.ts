@@ -14,7 +14,7 @@ export class UserService {
 
   async getAllUser(){
     return await this.userRepository.find({
-      where:{ rol: Not('superadmin'),}
+      where:{ rol: Not('superadmin'), deletedAt:null}
     });
   }
   async getUserById(id: string) {
