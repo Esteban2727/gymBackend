@@ -148,22 +148,33 @@ export class gymServices {
     password: string,
     nombreGym: string,
   ) {
-    const verifyUserGym = await this.administratorRepository.findOne({
-      where: [{ identification }, { email }, {deletedAt:null}],
-      
+    const userByEmail = await this.administratorRepository.findOne({
+      where: {
+        email,
+        deletedAt: null,
+      },
     });
+    
+    const userByIdentification = await this.administratorRepository.findOne({
+      where: {
+        identification,
+        deletedAt: null,
+      },
+    });
+    
+    // Verificamos si existe alguno activo
+    if (userByEmail || userByIdentification) {
+      throw new BadRequestException('Ya existe un usuario con ese correo o identificación');
+    }
+    
 
     const verifyGym = await this.gymRepository.findOne({
-      where: { name: nombreGym },
+      where: { name: nombreGym  , deletedAt:null},
     });
     if (verifyGym) {
       throw new BadRequestException('Ya existe ese nombre de gymnasio');
     }
-    if (verifyUserGym) {
-      throw new BadRequestException(
-        'Ya existe un administrador con esa identificación o correo',
-      );
-    }
+   
     const HashPassword: string = await bcrypt.hash(
       password,
       await bcrypt.genSalt(),
