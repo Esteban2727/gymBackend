@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { SocketGateway } from '../../gateways/socket.gateway';
 import { User } from 'src/auth/entity/user.entity';
@@ -34,7 +34,7 @@ export class DashboardServices {
       .addSelect(
         "json_agg(json_build_object('identification', user.identification, 'username', user.username, 'email', user.email))",
         'users',
-      ) 
+      )
       .innerJoin('gymUser.gym', 'gym')
       .innerJoin('gymUser.user', 'user')
       .where('gymUser.isActive = :isActive', { isActive: true })
@@ -47,7 +47,7 @@ export class DashboardServices {
   }
 
   async updateDatasInformation(id: number, stock: number): Promise<any> {
-    this.socketGateway.emitProductUpdate();
+    this.socketGateway.emitProductUpdate(this.getDatasInformation);
     return 'Data updated';
   }
 }
