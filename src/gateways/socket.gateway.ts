@@ -6,7 +6,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+  cors: {
+    origin: '*', // Ajusta según tu entorno (producción/dev)
+  },
+})
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -19,7 +23,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Cliente desconectado: ${client.id}`);
   }
 
-  emitProductUpdate(payload: any) {
-    this.server.emit('dashboardUpdate', payload); // Emitimos evento 'dashboardUpdate' y enviamos datos
+  emitDashboardUpdate(payload: any): void {
+    console.log('Emitiendo payload a clientes:', payload);
+    this.server.emit('dashboardUpdate', payload);
   }
 }

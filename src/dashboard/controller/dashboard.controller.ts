@@ -1,21 +1,14 @@
-import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { DashboardServices } from '../services/dashboard.service';
 
-@Controller('realtime')
+@Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardServices: DashboardServices) {}
 
-  @Get('datas')
-  getAllProducts(@Query('value') value: string) {
-    console.log(value);
-    return this.dashboardServices.getDatasInformation(value);
-  }
-
-  @Get('activeUser/:id') 
-  async getActiveUser(@Param('id') id: string) {
-    console.log();
-    const save = await this.dashboardServices.getDatasinformationActive(id);
-    console.log(save);
-    return save;
+  @Post('emit')
+  async emitDashboardUpdate() {
+    const data = await this.dashboardServices.getDatasInformation('male');
+    await this.dashboardServices.updateDatasInformation();
+    return { percentageMale: data }; // Esto es lo que verás en Insomnia
   }
 }

@@ -11,23 +11,24 @@ export class DashboardServices {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
     @InjectRepository(GymUser)
     private readonly GymUserRepository: Repository<GymUser>,
+
     private readonly socketGateway: SocketGateway,
   ) {}
 
-  async getDatasInformation(value: string) {
-    console.log(value, 111);
-    const [user, countGender] = await this.userRepository.findAndCount({
-      where: { gender: value },
+  async getDatasInformation(gender: string): Promise<string> {
+    const [, countGender] = await this.userRepository.findAndCount({
+      where: { gender },
     });
-    const searchAllData = await this.userRepository.count();
-    const divide = (countGender / searchAllData) * 100;
-    return [`${divide}%`];
+    const totalUsers = await this.userRepository.count();
+    const percentage = ((countGender / totalUsers) * 100).toFixed(2);
+    return `${percentage}%`;
   }
 
-  async getDatasinformationActive(id: string) {
-    const result = await this.GymUserRepository.createQueryBuilder('gymUser')
+  async getDatasinformationActive(): Promise<any> {
+    return this.GymUserRepository.createQueryBuilder('gymUser')
       .select('gym.id', 'gymId')
       .addSelect('gym.name', 'gymName')
       .addSelect('COUNT(gymUser.id)', 'activeUserCount')
@@ -42,12 +43,10 @@ export class DashboardServices {
       .addGroupBy('gym.name')
       .orderBy('gym.name', 'DESC')
       .getRawMany();
-
-    return result;
   }
 
-  async updateDatasInformation(id: number, stock: number): Promise<any> {
-    this.socketGateway.emitProductUpdate(this.getDatasInformation);
-    return 'Data updated';
+  async updateDatasInformation(): Promise<void> {
+    const data = await this.getDatasInformation('male');
+    this.socketGateway.emitDashboardUpdate({ percentageMale: data });
   }
 }
