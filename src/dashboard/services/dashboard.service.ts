@@ -21,6 +21,7 @@ export class DashboardServices {
   async getDatasInformation(gender: string): Promise<string> {
     const [, countGender] = await this.userRepository.findAndCount({
       where: { gender },
+      withDeleted: false
     });
     const totalUsers = await this.userRepository.count();
     const percentage = ((countGender / totalUsers) * 100).toFixed(2);

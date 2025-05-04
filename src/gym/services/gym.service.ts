@@ -8,6 +8,7 @@ import { administrator } from '../entity/userAdministrador.entity';
 import { GymUser } from '../gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/auth/entity/user.entity';
+import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 
 @Injectable()
 export class gymServices {
@@ -22,6 +23,7 @@ export class gymServices {
     @InjectRepository(User)
     readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource,
+    private readonly dashboardService: DashboardServices,
   ) {}
   async verifyDatasGym(
     logoUrl: any,
@@ -112,6 +114,7 @@ export class gymServices {
 
       await querybuilder.manager.softRemove(verifyGym);
       await querybuilder.commitTransaction();
+      await this.dashboardService.updateDatasInformation();
     } catch (error) {
       await querybuilder.rollbackTransaction();
       throw error;
@@ -257,6 +260,7 @@ export class gymServices {
 `;
       await this.sendMail.sendEmail(email, html, subject);
       await querybuilder.commitTransaction();
+      await this.dashboardService.updateDatasInformation();
       return assignUserToGym;
     } catch (error) {
       await querybuilder.rollbackTransaction();
