@@ -30,7 +30,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
   controllers: [DashboardController],
   providers: [DashboardServices, SocketGateway],
-  exports:[SocketGateway]
-
+  exports: [SocketGateway, DashboardServices],
 })
 export class DashboardModule {}

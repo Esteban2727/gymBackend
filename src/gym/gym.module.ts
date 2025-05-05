@@ -43,7 +43,7 @@ import { DashboardModule } from 'src/dashboard/dashboard.module';
     GymUserServices,
     MailService,
     UploadService,
-    DashboardServices,
+
   ],
 })
 export class GymModule {}
