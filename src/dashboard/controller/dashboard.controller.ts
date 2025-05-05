@@ -8,7 +8,8 @@ export class DashboardController {
   @Post('emit')
   async emitDashboardUpdate() {
     const data = await this.dashboardServices.getDatasInformation('male');
+    const dataPeople = await this.dashboardServices.PersonasByGym();
     await this.dashboardServices.updateDatasInformation();
-    return { percentageMale: data }; // Esto es lo que verás en Insomnia
+    return { percentageMale: data, percentagePeople: dataPeople };
   }
 }

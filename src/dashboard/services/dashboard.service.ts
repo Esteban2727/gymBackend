@@ -21,7 +21,7 @@ export class DashboardServices {
   async getDatasInformation(gender: string): Promise<string> {
     const [, countGender] = await this.userRepository.findAndCount({
       where: { gender },
-      withDeleted: false
+      withDeleted: false,
     });
     const totalUsers = await this.userRepository.count();
     const percentage = ((countGender / totalUsers) * 100).toFixed(2);
@@ -48,6 +48,21 @@ export class DashboardServices {
 
   async updateDatasInformation(): Promise<void> {
     const data = await this.getDatasInformation('male');
+    const dataPeople = await this.PersonasByGym();
     this.socketGateway.emitDashboardUpdate({ percentageMale: data });
+    this.socketGateway.emitDashboardUpdate({ percentageMale: dataPeople });
+  }
+
+  async PersonasByGym() {
+    return await this.userRepository
+      .createQueryBuilder('u') 
+      .innerJoin('u.gymUsers', 'gu')
+      .innerJoin('gu.gym', 'g')
+      .select('g.id', 'gymId')
+      .addSelect('g.name', 'gymName')
+      .addSelect('COUNT(u.identification)', 'totalPeople')
+      .groupBy('g.id')
+      .addGroupBy('g.name')
+      .getRawMany();
   }
 }
