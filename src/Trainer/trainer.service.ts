@@ -41,19 +41,18 @@ export class TrainerServices {
     const existingTrainer = await this.userRepository.findOne({
       where: [{ email }, { identification }],
     });
-  
+
     if (existingTrainer) {
       return 'The trainer data already exists in the database.';
     }
-  
+
     const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt());
-  
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-  
+
     try {
-      // Crear y guardar el trainer
       const trainer = this.trainerRepository.create({
         cellphone,
         certifications: especialization,
@@ -61,26 +60,27 @@ export class TrainerServices {
         password: hashedPassword,
         gender,
         identification,
+        rol: 'Trainer',
         username,
         yearExperience,
       });
-  
+
       const savedTrainer = await queryRunner.manager.save(Trainer, trainer);
-  
+
       // Buscar gimnasio
       const gym = await this.gymRepository.findOne({ where: { id: idGym } });
       if (!gym) throw new Error('Gym not found');
-  
+
       // Crear relación gym-user
       const gymTrainer = this.trainerToGymRepository.create({
         gym: gym,
         user: savedTrainer,
       });
-  
+
       await queryRunner.manager.save(gymTrainer);
-  
+
       const { logo, fourth, fontFamily, primary, name, secondary, third } = gym;
-  
+
       const subject = 'Usuario creado, ¡bienvenido!';
       const html = `
         <div style="font-family: ${fontFamily}, sans-serif; background-color: ${secondary}; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; color: ${third}; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
@@ -100,11 +100,11 @@ export class TrainerServices {
           <p style="font-size: 14px; color: ${third};">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
         </div>
       `;
-  
+
       await this.sendMail.sendEmail(email, html, subject);
-  
+
       await queryRunner.commitTransaction();
-  
+
       return 'Trainer created successfully.';
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -114,7 +114,6 @@ export class TrainerServices {
       await queryRunner.release();
     }
   }
-  
 
   async updateInformationTrainer(identification: string, newData: any) {
     const trainer = await this.trainerRepository.findOne({
