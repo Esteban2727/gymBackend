@@ -21,7 +21,7 @@ import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
-    ConfigModule, 
+    ConfigModule,
     PassportModule,
     DashboardModule,
     JwtModule.registerAsync({
@@ -38,12 +38,6 @@ import { DashboardModule } from 'src/dashboard/dashboard.module';
     MailModule,
   ],
   controllers: [GymController, GymUserController],
-  providers: [
-    gymServices,
-    GymUserServices,
-    MailService,
-    UploadService,
-
-  ],
+  providers: [gymServices, GymUserServices, MailService, UploadService],
 })
 export class GymModule {}

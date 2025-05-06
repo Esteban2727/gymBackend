@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Trainer } from './trainer.entity';
 import * as bcrypt from 'bcryptjs';
 import { GymUser } from 'src/gym/gymUser.entity';
@@ -20,6 +20,7 @@ export class TrainerServices {
     private readonly sendMail: MailService,
     @InjectRepository(Gym)
     readonly gymRepository: Repository<Gym>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getDataTrainer() {
@@ -33,69 +34,87 @@ export class TrainerServices {
     identification: string,
     password: string,
     username: string,
-    especialization: string | string[],
+    especialization: any,
     yearExperience: string,
     idGym: string,
   ) {
-    const verifyTrainerExisting = await this.userRepository.findOne({
-      where: [{ email: email }, { identification: identification }],
+    const existingTrainer = await this.userRepository.findOne({
+      where: [{ email }, { identification }],
     });
-
-    console.log(verifyTrainerExisting);
-    if (verifyTrainerExisting) {
-      return 'the datas of this trainer exits already in the database';
+  
+    if (existingTrainer) {
+      return 'The trainer data already exists in the database.';
     }
-    const HashPassword: string = await bcrypt.hash(
-      password,
-      await bcrypt.genSalt(),
-    );
-    const createTrainer = await this.trainerRepository.create({
-      cellphone: cellphone,
-      certifications: especialization,
-      email: email,
-      password: HashPassword,
-      gender: gender,
-      identification: identification,
-      username: username,
-      yearExperience: yearExperience,
-    });
-
-    await this.trainerRepository.save(createTrainer);
-    const createGymTrainer = this.trainerToGymRepository.create({
-      gym: { id: idGym },
-      user: { identification: identification },
-    });
-
-    const { logo, fourth, fontFamily, primary, name, secondary, third } =
-      await this.gymRepository.findOne({
-        where: { id: idGym },
+  
+    const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt());
+  
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
+    try {
+      // Crear y guardar el trainer
+      const trainer = this.trainerRepository.create({
+        cellphone,
+        certifications: especialization,
+        email,
+        password: hashedPassword,
+        gender,
+        identification,
+        username,
+        yearExperience,
       });
-
-    const subject = 'usuario creado, bienvenido';
-    const html = `
-  <div style="font-family: ${fontFamily}, sans-serif; background-color: ${secondary}; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; color: ${third}; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
-    <h1 style="color: ${primary}; font-size: 24px;">Bienvenido al gimnasio ${name} 🏋️‍♂️</h1>
-
-    <img src= "${logo}" alt="GIF Motivacional"
-      style="width: 100%; border-radius: 8px; margin-top: 20px; border: 2px solid ${primary};" />
-
-    <hr style="border: 1px dashed ${primary}; margin: 20px 0;" />
-
-    <p style="font-size: 16px;"><strong>Correo electrónico:</strong> <span style="color: ${fourth};">${email}</span></p>
-    <p style="font-size: 16px;"><strong>Contraseña:</strong> <span style="color: ${fourth};">${password}</span></p>
-    <p style="font-size: 16px;"><strong>Celular:</strong> <span style="color: ${fourth};">${cellphone}</span></p>
-
-    <hr style="border: 1px dashed ${primary}; margin: 20px 0;" />
-
-    <p style="font-size: 14px; color: ${third};">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
-  </div>
-`;
-    await this.sendMail.sendEmail(email, html, subject);
-
-    await this.trainerToGymRepository.save(createGymTrainer);
-
-    return 'created with succefully';
+  
+      const savedTrainer = await queryRunner.manager.save(Trainer, trainer);
+  
+      // Buscar gimnasio
+      const gym = await this.gymRepository.findOne({ where: { id: idGym } });
+      if (!gym) throw new Error('Gym not found');
+  
+      // Crear relación gym-user
+      const gymTrainer = this.trainerToGymRepository.create({
+        gym: gym,
+        user: savedTrainer,
+      });
+  
+      await queryRunner.manager.save(gymTrainer);
+  
+      const { logo, fourth, fontFamily, primary, name, secondary, third } = gym;
+  
+      const subject = 'Usuario creado, ¡bienvenido!';
+      const html = `
+        <div style="font-family: ${fontFamily}, sans-serif; background-color: ${secondary}; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; color: ${third}; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+          <h1 style="color: ${primary}; font-size: 24px;">Bienvenido al gimnasio ${name} 🏋️‍♂️</h1>
+  
+          <img src="${logo}" alt="GIF Motivacional"
+            style="width: 100%; border-radius: 8px; margin-top: 20px; border: 2px solid ${primary};" />
+  
+          <hr style="border: 1px dashed ${primary}; margin: 20px 0;" />
+  
+          <p style="font-size: 16px;"><strong>Correo electrónico:</strong> <span style="color: ${fourth};">${email}</span></p>
+          <p style="font-size: 16px;"><strong>Contraseña:</strong> <span style="color: ${fourth};">${password}</span></p>
+          <p style="font-size: 16px;"><strong>Celular:</strong> <span style="color: ${fourth};">${cellphone}</span></p>
+  
+          <hr style="border: 1px dashed ${primary}; margin: 20px 0;" />
+  
+          <p style="font-size: 14px; color: ${third};">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
+        </div>
+      `;
+  
+      await this.sendMail.sendEmail(email, html, subject);
+  
+      await queryRunner.commitTransaction();
+  
+      return 'Trainer created successfully.';
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error('Error creating trainer:', error);
+      throw new Error('There was a problem creating the trainer.');
+    } finally {
+      await queryRunner.release();
+    }
   }
+  
 
   async updateInformationTrainer(identification: string, newData: any) {
     const trainer = await this.trainerRepository.findOne({

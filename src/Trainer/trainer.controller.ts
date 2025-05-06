@@ -63,6 +63,4 @@ export class TrainerController {
       updateData,
     );
   }
-
-
 }
