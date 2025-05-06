@@ -46,7 +46,7 @@ export class TrainerDto {
   @IsNotEmpty({ message: 'pon tus titulos' })
   readonly certifications: string | string[];
 
-  @IsOptional()
+
   @IsNotEmpty({ message: 'id del gymnasio' })
   readonly idGym: string;
 }

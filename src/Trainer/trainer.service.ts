@@ -67,7 +67,7 @@ export class TrainerServices {
 
       const savedTrainer = await queryRunner.manager.save(Trainer, trainer);
 
-      // Buscar gimnasio
+      console.log(idGym)
       const gym = await this.gymRepository.findOne({ where: { id: idGym } });
       if (!gym) throw new Error('Gym not found');
 
