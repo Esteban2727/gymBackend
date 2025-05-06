@@ -63,4 +63,17 @@ export class TrainerController {
       updateData,
     );
   }
+
+  @Get('get/:id')
+  @UseGuards(AuthGuard)
+  async getDataTrainerByGym(@Param('id') id: string) {
+    const bringData = await this.trainerServices.getDataTrainerByGym(id);
+    console.log(bringData);
+    return bringData;
+  }
+
+  @Get('assign/:idCustomer/:idTrainer')
+  async assignUserToTrainer(@Param() id: string[]) {
+    return await this.trainerServices.assignTrainer(id);
+  }
 }

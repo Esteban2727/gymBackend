@@ -7,6 +7,7 @@ import { GymUser } from 'src/gym/gymUser.entity';
 import { User } from 'src/auth/entity/user.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Gym } from 'src/gym/gym.entity';
+import { TrainerCustomer } from './trainerCustomer.entity';
 
 @Injectable()
 export class TrainerServices {
@@ -21,6 +22,8 @@ export class TrainerServices {
     @InjectRepository(Gym)
     readonly gymRepository: Repository<Gym>,
     private readonly dataSource: DataSource,
+    @InjectRepository(TrainerCustomer)
+    readonly trainerCustomer: Repository<TrainerCustomer>,
   ) {}
 
   async getDataTrainer() {
@@ -67,7 +70,7 @@ export class TrainerServices {
 
       const savedTrainer = await queryRunner.manager.save(Trainer, trainer);
 
-      console.log(idGym)
+      console.log(idGym);
       const gym = await this.gymRepository.findOne({ where: { id: idGym } });
       if (!gym) throw new Error('Gym not found');
 
@@ -133,5 +136,43 @@ export class TrainerServices {
     );
 
     return { success: 'Trainer information updated successfully.' };
+  }
+
+  async getDataTrainerByGym(id: string) {
+    return await this.trainerRepository
+      .createQueryBuilder('tr')
+      .leftJoinAndSelect(
+        GymUser,
+        'gm',
+        'gm.userIdentification = tr.identification',
+      )
+      .leftJoinAndSelect(Gym, 'gym', 'gym.id = gm.gymId')
+      .where('gym.id = :value', { value: id })
+      .getMany();
+  }
+
+  async assignTrainer(id: any) {
+    const { idCustomer, idTrainer } = id;
+
+    const verifyExistingAssign = await this.trainerCustomer.findOne({
+      where: {
+        trainer: { identification: idTrainer },
+        customer: { identification: idCustomer },
+      },
+    });
+    if (verifyExistingAssign) {
+      return 'ya fue asignado ese entrenador a ese usuario';
+    }
+
+    const assignTrainerToCustomer = await this.trainerCustomer
+      .createQueryBuilder()
+      .insert()
+      .values({
+        customer: idCustomer,
+        trainer: idTrainer,
+      })
+      .execute();
+
+    return assignTrainerToCustomer;
   }
 }

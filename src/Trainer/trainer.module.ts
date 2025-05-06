@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Gym } from 'src/gym/gym.entity';
 import { MailService } from 'src/mail/mail.service';
+import { TrainerCustomer } from './trainerCustomer.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { MailService } from 'src/mail/mail.service';
         },
       }),
     }),
-    TypeOrmModule.forFeature([Trainer, GymUser, User, Gym]),
+    TypeOrmModule.forFeature([Trainer, GymUser, User, Gym ,TrainerCustomer]),
   ],
   controllers: [TrainerController],
   providers: [TrainerServices,MailService],
