@@ -32,10 +32,11 @@ import { TrainerModule } from './Trainer/trainer.module';
 import { Routine } from './rutine/rutine.entity';
 import { RoutineExercise } from './rutine/routineExcersise.entity';
 import { RoutineTrainer } from './rutine/routineTrainer';
-import { routineMOdule } from './rutine/routine.module';
+import { RoutineMOdule } from './rutine/routine.module';
 import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
 import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGroupMuscular.module';
 import { administrator } from './gym/entity/userAdministrador.entity';
+import { exerciseModules } from './exercises/exercise.module';
 
 @Module({
   imports: [
@@ -101,10 +102,11 @@ import { administrator } from './gym/entity/userAdministrador.entity';
     DashboardModule,
     subcriptionModule,
     GateWayModule,
-    routineMOdule,
+    RoutineMOdule,
     TrainerModule,
     groupMuscleModule,
     exerciseGroupMuscularModule,
+    exerciseModules
   ],
   providers: [],
 })

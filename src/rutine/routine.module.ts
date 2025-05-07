@@ -14,4 +14,4 @@ import { RoutineService } from "./rutine.service";
    providers:[RoutineService]
 
 })
-export class routineMOdule{}
+export class RoutineMOdule{}
