@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Gym } from 'src/gym/gym.entity';
 import { MailService } from 'src/mail/mail.service';
 import { TrainerCustomer } from './trainerCustomer.entity';
+import { Customer } from 'src/customer/customer.entity';
 
 @Module({
   imports: [
@@ -26,9 +27,16 @@ import { TrainerCustomer } from './trainerCustomer.entity';
         },
       }),
     }),
-    TypeOrmModule.forFeature([Trainer, GymUser, User, Gym ,TrainerCustomer]),
+    TypeOrmModule.forFeature([
+      Trainer,
+      GymUser,
+      User,
+      Gym,
+      TrainerCustomer,
+      Customer,
+    ]),
   ],
   controllers: [TrainerController],
-  providers: [TrainerServices,MailService],
+  providers: [TrainerServices, MailService],
 })
 export class TrainerModule {}

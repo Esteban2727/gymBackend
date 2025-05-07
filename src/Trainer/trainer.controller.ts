@@ -76,4 +76,13 @@ export class TrainerController {
   async assignUserToTrainer(@Param() id: string[]) {
     return await this.trainerServices.assignTrainer(id);
   }
+  @Get('info/:id')
+  async getInformationTrainer(@Param('id') id: string) {
+    return await this.trainerServices.getTrainerById(id);
+  }
+
+  @Get('customerAssigned/:id')
+  async customerAssignedToTrainer(@Param('id') id: string) {
+    return await this.trainerServices.getCustomersAssigned(id);
+  }
 }

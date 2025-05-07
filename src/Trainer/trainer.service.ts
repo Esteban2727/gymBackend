@@ -8,6 +8,7 @@ import { User } from 'src/auth/entity/user.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Gym } from 'src/gym/gym.entity';
 import { TrainerCustomer } from './trainerCustomer.entity';
+import { Customer } from 'src/customer/customer.entity';
 
 @Injectable()
 export class TrainerServices {
@@ -24,6 +25,8 @@ export class TrainerServices {
     private readonly dataSource: DataSource,
     @InjectRepository(TrainerCustomer)
     readonly trainerCustomer: Repository<TrainerCustomer>,
+    @InjectRepository(Customer)
+    readonly customerRepository: Repository<Customer>,
   ) {}
 
   async getDataTrainer() {
@@ -174,5 +177,30 @@ export class TrainerServices {
       .execute();
 
     return assignTrainerToCustomer;
+  }
+
+  async getTrainerById(id: string): Promise<Trainer> {
+    return await this.trainerRepository.findOne({
+      where: { identification: id },
+    });
+  }
+
+  async getCustomersAssigned(id: string) {
+    const customerAssigned = await this.customerRepository
+      .createQueryBuilder('cr')
+      .leftJoinAndSelect(
+        TrainerCustomer,
+        'tc',
+        'tc.customerIdentification = cr.identification',
+      )
+      .leftJoinAndSelect(
+        Trainer,
+        'tr',
+        'tr.identification = tc.trainerIdentification',
+      )
+      .where('tr.identification = :id', { id })
+      .getMany();
+
+    return customerAssigned;
   }
 }
