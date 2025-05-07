@@ -9,6 +9,7 @@ import { GymUser } from '../gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/auth/entity/user.entity';
 import { DashboardServices } from 'src/dashboard/services/dashboard.service';
+import { Customer } from 'src/customer/customer.entity';
 
 @Injectable()
 export class gymServices {
@@ -317,5 +318,26 @@ export class gymServices {
       return 'ESE GYMNASIO NO EXISTE';
     }
     await this.gymRepository.recover(verify);
+  }
+
+  async getAllCustomer(id: string) {
+    const dataCustomer = await this.gymRepository
+      .createQueryBuilder('gym')
+      .select([
+        'cm.username as nombre',
+        'cm.email as correo ',
+        'cm.gender',
+        'cm.cellphone',
+        'cm.profilePicture ',
+        'cm.createdAt',
+        'cm.deletedAt',
+      ])
+      .leftJoin(GymUser, 'gu', 'gu.gymId = gym.id')
+      .leftJoin(Customer, 'cm', 'cm.identification = gu.userIdentification')
+      .withDeleted()
+      .where('gym.id = :id', { id })
+      .getRawMany();
+
+    return dataCustomer;
   }
 }

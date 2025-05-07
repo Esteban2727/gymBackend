@@ -7,6 +7,7 @@ import {
   Req,
   Body,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/guards/JwtAutentication.guard';
 import { CustomerService } from '../services/customer.service';
@@ -16,6 +17,7 @@ import { rolEnum } from 'src/enum/rol.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { registerDTO } from 'src/auth/DTO/register.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { updateDto } from '../update.dto';
 
 @Controller('customer')
 @ApiTags('Customer')
@@ -24,7 +26,6 @@ export class CustomerController {
 
   @Post('create')
   async CreateCustomer(@Body() userdto: registerDTO) {
-    
     const {
       cellphone,
       email,
@@ -100,5 +101,14 @@ export class CustomerController {
     const deleteCustomer = await this.CustomerService.deleteCustomer(id);
     console.log(deleteCustomer);
     return deleteCustomer;
+  }
+
+  @Patch('updateData/:id')
+  async updateDataCustomer(
+    @Param('id') id: string,
+    @Body() updateDto: updateDto,
+  ) {
+    const { cel, username } = updateDto;
+    return await this.CustomerService.updateData(id, cel, username);
   }
 }

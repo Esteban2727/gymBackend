@@ -145,4 +145,9 @@ export class GymController {
   async activateGymDeleted(@Param('id') id: string) {
     return await this.gymServices.ActivateGym(id);
   }
+
+  @Get('customerAll/:id')
+  async getAllCuatomer(@Param('id') id: string) {
+    return await this.gymServices.getAllCustomer(id);
+  }
 }
