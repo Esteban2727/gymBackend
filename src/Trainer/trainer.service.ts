@@ -203,4 +203,16 @@ export class TrainerServices {
 
     return customerAssigned;
   }
+
+  async updateData(id: string, cel: string, username: string): Promise<any> {
+    const updateDataOfRepository = await this.trainerRepository
+      .createQueryBuilder()
+      .update(Trainer)
+      .set({
+        cellphone: cel,
+        username: username,
+      })
+      .where('identification = :id', { id })
+      .execute();
+    return "actualizado";
 }

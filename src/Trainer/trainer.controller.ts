@@ -13,6 +13,7 @@ import { TrainerServices } from './trainer.service';
 import { TrainerDto } from './trainer.dto';
 import { AuthGuard } from 'src/guards/JwtAutentication.guard';
 import { Request } from 'express';
+import { updateDto } from 'src/customer/update.dto';
 
 @Controller('trainer')
 export class TrainerController {
@@ -85,4 +86,16 @@ export class TrainerController {
   async customerAssignedToTrainer(@Param('id') id: string) {
     return await this.trainerServices.getCustomersAssigned(id);
   }
+
+  @Patch('updateData/:id')
+  async updateDataTrainer(
+    @Param('id') id: string,
+    @Body() updateDto: updateDto,
+  ) {
+    const { cel, username } = updateDto;
+    return await this.trainerServices.updateData(id, cel, username);
+  }
+
+  
+
 }
