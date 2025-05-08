@@ -4,6 +4,7 @@ import { Not, Repository } from 'typeorm';
 import { User } from '../../auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { Gym } from 'src/gym/gym.entity';
+import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 @Injectable()
 export class UserService {
@@ -29,10 +30,17 @@ export class UserService {
         'us.gender',
         'us.identification',
         'gm.name',
+        'sb.remainingDays',
+        'sb.startDate',
       ])
       .where('us.identification = :value', { value: id })
       .innerJoin(GymUser, 'gu', 'gu.userIdentification = us.identification')
       .innerJoin(Gym, 'gm', 'gm.id = gu.gymId')
+      .innerJoin(
+        Subscription,
+        'sb',
+        'sb.customerIdentification = us.identification',
+      )
       .getRawOne();
   }
 
