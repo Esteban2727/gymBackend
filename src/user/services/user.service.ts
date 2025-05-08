@@ -5,6 +5,8 @@ import { User } from '../../auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { Gym } from 'src/gym/gym.entity';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
+import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
+import { Trainer } from 'src/Trainer/trainer.entity';
 
 @Injectable()
 export class UserService {
@@ -19,7 +21,7 @@ export class UserService {
     });
   }
   async getUserById(id: string) {
-    return await this.userRepository
+     const data = await this.userRepository
       .createQueryBuilder('us')
       .select([
         'us.username',
@@ -32,16 +34,30 @@ export class UserService {
         'gm.name',
         'sb.remainingDays',
         'sb.startDate',
+        'tm.trainerIdentification as cedulaEntrenador',
+        'tr.username as nombreEntrenador',
+        'tr.certifications as experiencia',
+        'tr.yearExperience  as  year',
+        'tr.profilePicture',
       ])
       .where('us.identification = :value', { value: id })
-      .innerJoin(GymUser, 'gu', 'gu.userIdentification = us.identification')
-      .innerJoin(Gym, 'gm', 'gm.id = gu.gymId')
-      .innerJoin(
+      .leftJoin(GymUser, 'gu', 'gu.userIdentification = us.identification')
+      .leftJoin(Gym, 'gm', 'gm.id = gu.gymId')
+      .leftJoin(
         Subscription,
         'sb',
         'sb.customerIdentification = us.identification',
       )
+      .leftJoin(
+        TrainerCustomer,
+        'tm',
+        'tm.customerIdentification = us.identification',
+      )
+      .leftJoin(Trainer, 'tr', 'tm.trainerIdentification = tr.identification')
       .getRawOne();
+
+      
+      return data
   }
 
   async updateProfilePicture(userId: string, imageUrl: string) {
