@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { User } from '../../auth/entity/user.entity';
 import { Customer } from 'src/customer/customer.entity';
 
@@ -15,7 +22,7 @@ export class Subscription {
 
   @CreateDateColumn()
   startDate: Date;
-    
-  @DeleteDateColumn({ nullable: true }) 
-    deletedAt: Date | null
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 }

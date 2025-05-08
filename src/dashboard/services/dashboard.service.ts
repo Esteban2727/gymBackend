@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { SocketGateway } from '../../gateways/socket.gateway';
 import { User } from 'src/auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
+import { Gym } from 'src/gym/gym.entity';
 
 @Injectable()
 export class DashboardServices {
@@ -55,7 +56,7 @@ export class DashboardServices {
 
   async PersonasByGym() {
     return await this.userRepository
-      .createQueryBuilder('u') 
+      .createQueryBuilder('u')
       .innerJoin('u.gymUsers', 'gu')
       .innerJoin('gu.gym', 'g')
       .select('g.id', 'gymId')
@@ -64,5 +65,32 @@ export class DashboardServices {
       .groupBy('g.id')
       .addGroupBy('g.name')
       .getRawMany();
+  }
+
+  async getDatasInformationGenderByGym(gender: string, gymId: string) {
+    const genderCount = await this.userRepository
+      .createQueryBuilder('u')
+      .leftJoin(GymUser, 'gu', 'gu.userIdentification = u.identification')
+      .leftJoin(Gym, 'g', 'g.id = gu.gymId')
+      .where('u.gender = :gender', { gender })
+      .andWhere('u.rol != :rol', { rol: 'administrador' })
+      .andWhere('g.id = :gymId', { gymId })
+      .getCount();
+
+    const totalUsersInGym = await this.userRepository
+      .createQueryBuilder('u')
+      .leftJoin(GymUser, 'gu', 'gu.userIdentification = u.identification')
+      .leftJoin(Gym, 'g', 'g.id = gu.gymId')
+      .where('g.id = :gymId', { gymId })
+      .andWhere('u.rol != :rol', { rol: 'administrador' })
+      .getCount();
+
+    const percentage =
+      totalUsersInGym > 0
+        ? ((genderCount / totalUsersInGym) * 100).toFixed(2)
+        : '0.00';
+
+    this.socketGateway.emitDashboardUpdate({ percentageMale: percentage });
+
   }
 }
