@@ -37,6 +37,8 @@ import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
 import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGroupMuscular.module';
 import { administrator } from './gym/entity/userAdministrador.entity';
 import { exerciseModules } from './exercises/exercise.module';
+import { pruebaModule } from './pruebasArchivos/prueba.module';
+import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
 
 @Module({
   imports: [
@@ -91,7 +93,8 @@ import { exerciseModules } from './exercises/exercise.module';
       Routine,
       RoutineExercise,
       RoutineTrainer,
-      administrator
+      administrator,
+      TrainerCustomer
     ]),
     AuthModule,
     CustomerModule,
@@ -106,7 +109,8 @@ import { exerciseModules } from './exercises/exercise.module';
     TrainerModule,
     groupMuscleModule,
     exerciseGroupMuscularModule,
-    exerciseModules
+    exerciseModules,
+    pruebaModule,
   ],
   providers: [],
 })

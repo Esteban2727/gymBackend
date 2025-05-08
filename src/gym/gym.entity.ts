@@ -13,7 +13,7 @@ export class Gym {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: false })
   name: string;
 
   @Column({ nullable: true })

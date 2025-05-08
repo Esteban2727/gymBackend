@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Gym } from '../gym.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { DataSource, IsNull, Not, Repository } from 'typeorm';
 
 import * as bcrypt from 'bcryptjs';
 import { administrator } from '../entity/userAdministrador.entity';
 import { GymUser } from '../gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/auth/entity/user.entity';
+import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 import { Customer } from 'src/customer/customer.entity';
 
 @Injectable()
@@ -22,7 +23,8 @@ export class gymServices {
     private readonly sendMail: MailService,
     @InjectRepository(User)
     readonly userRepository: Repository<User>,
-    
+    private readonly dataSource: DataSource,
+    private readonly dashboardService: DashboardServices,
   ) {}
   async verifyDatasGym(
     logoUrl: any,
@@ -30,7 +32,7 @@ export class gymServices {
     primaryColor: string,
     secondaryColor: string,
   ) {
-    console.log("cambios");
+    console.log('cambios');
     const verifyExistringGym = await this.gymRepository.findOne({
       where: [{ name: name }],
     });
@@ -64,7 +66,7 @@ export class gymServices {
     if (!verifyGym) {
       new BadRequestException('dont exist that gym');
     }
-    const updateGym = await this.gymRepository
+    await this.gymRepository
       .createQueryBuilder('gym')
       .update(Gym)
       .set({
@@ -82,35 +84,48 @@ export class gymServices {
   }
 
   async deleteGymServices(name: string) {
-    // Verificar si el gimnasio existe
-    const verifyGym = await this.gymRepository.findOne({
-      where: { name:name },
-      relations: ['gymUsers', 'gymUsers.user'], // aseguramos que cargue los usuarios relacionados
-    });
-  
-    if (!verifyGym) {
-      return 'Ese gimnasio no existe en la base de datos';
+    console.log(name, 'entro el gym');
+
+    const querybuilder = await this.dataSource.createQueryRunner();
+    await querybuilder.connect();
+    await querybuilder.startTransaction();
+    try {
+      const verifyGym = await querybuilder.manager.findOne(
+        this.gymRepository.target,
+        {
+          where: { name: name },
+          relations: ['gymUsers', 'gymUsers.user'],
+          withDeleted: false,
+        },
+      );
+      console.log(verifyGym, 'hola');
+      if (!verifyGym) {
+        return 'Ese gimnasio no existe en la base de datos';
+      }
+
+      const gymUsers = verifyGym.gymUsers;
+
+      if (gymUsers && gymUsers.length > 0) {
+        const users = gymUsers.map((gymUser) => gymUser.user);
+
+        await querybuilder.manager.softRemove(gymUsers);
+
+        await querybuilder.manager.softRemove(users);
+      }
+
+      await querybuilder.manager.softRemove(verifyGym);
+      await querybuilder.commitTransaction();
+      await this.dashboardService.updateDatasInformation();
+    } catch (error) {
+      await querybuilder.rollbackTransaction();
+      throw error;
+    } finally {
+      await querybuilder.release();
     }
-  
-    // Obtener todos los usuarios relacionados al gimnasio a través de gymUser
-    const gymUsers = verifyGym.gymUsers;
-  
-    if (gymUsers && gymUsers.length > 0) {
-      const users = gymUsers.map(gymUser => gymUser.user);
-  
-      // Eliminamos los registros de gymUser
-      await this.gymUserRepository.softRemove(gymUsers);
-  
-      // Eliminamos los usuarios relacionados
-      await this.userRepository.softRemove(users);
-    }
-  
-    // Finalmente eliminamos el gimnasio
-    await this.gymRepository.softRemove(verifyGym);
-  
+
     return 'Gimnasio, usuarios y relaciones eliminados correctamente';
   }
-  
+
   async getDeletedGym() {
     const searchDeletedGym = await this.gymRepository.find({
       withDeleted: true,
@@ -134,7 +149,7 @@ export class gymServices {
 
   async getActiveGymByid(gym: string) {
     const searchActivedGym = await this.gymRepository.findOne({
-      where: { name: gym },
+      where: { id: gym },
     });
     return searchActivedGym;
   }
@@ -148,60 +163,86 @@ export class gymServices {
     password: string,
     nombreGym: string,
   ) {
-    const verifyUserGym = await this.administratorRepository.findOne({
-      where: [{ identification }, { email }],
+    const userByEmail = await this.administratorRepository.findOne({
+      where: {
+        email,
+      },
+      withDeleted: true,
     });
 
+    const userByIdentification = await this.administratorRepository.findOne({
+      where: {
+        identification,
+      },
+      withDeleted: true,
+    });
+
+    if (userByEmail || userByIdentification) {
+      throw new BadRequestException(
+        'Ya existe un usuario con ese correo o identificación',
+      );
+    }
     const verifyGym = await this.gymRepository.findOne({
       where: { name: nombreGym },
+      withDeleted: false,
     });
     if (verifyGym) {
       throw new BadRequestException('Ya existe ese nombre de gymnasio');
     }
-    if (verifyUserGym) {
-      throw new BadRequestException(
-        'Ya existe un administrador con esa identificación o correo',
-      );
-    }
+
     const HashPassword: string = await bcrypt.hash(
       password,
       await bcrypt.genSalt(),
     );
-    const createUserGym = await this.administratorRepository.create({
-      email: email,
-      gender: gender,
-      identification: identification,
-      rol: 'administrador',
-      username: nameAdministrador,
-      password: HashPassword,
-      cellphone: cellphone,
-    });
 
-    await this.administratorRepository.save(createUserGym);
+    const querybuilder = this.dataSource.createQueryRunner();
+    await querybuilder.connect();
+    await querybuilder.startTransaction();
+    try {
+      await querybuilder.manager
+        .createQueryBuilder()
+        .insert()
+        .into('user')
+        .values({
+          email: email,
+          gender: gender,
+          identification: identification,
+          rol: 'administrador',
+          username: nameAdministrador,
+          password: HashPassword,
+          cellphone: cellphone,
+        })
+        .execute();
 
-    const insertResult = await this.gymRepository
-      .createQueryBuilder()
-      .insert()
-      .into('gym')
-      .values({
-        name: nombreGym,
-        font: "Roboto', sans-serif",
-        primaryColor: '#ff6f00',
-        secondaryColor: '#1e1e1e',
-      })
-      .returning(['id'])
-      .execute();
+      const insertResult = await querybuilder.manager
+        .createQueryBuilder()
+        .insert()
+        .into('gym')
+        .values({
+          name: nombreGym,
+          font: "Roboto', sans-serif",
+          primaryColor: '#ff6f00',
+          secondaryColor: '#1e1e1e',
+        })
+        .returning(['id'])
+        .execute();
 
-    const gymId = insertResult.raw[0].id;
+      const gymId = insertResult.raw[0].id;
 
-    const assignUserToGym = await this.gymUserRepository.create({
-      gym: { id: gymId },
-      user: { identification: identification },
-    });
-    await this.gymUserRepository.save(assignUserToGym);
+      const assignUserToGym = await querybuilder.manager.create(
+        this.gymUserRepository.target,
+        {
+          gym: { id: gymId },
+          user: { identification: identification },
+        },
+      );
+      await querybuilder.manager.save(
+        this.gymUserRepository.target,
+        assignUserToGym,
+      );
 
-    const subject = 'usuario creado, bienvenido';
-    const html = `
+      const subject = 'usuario creado, bienvenido';
+      const html = `
   <div style="font-family: 'Roboto', sans-serif; background-color: #1e1e1e; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
     <h1 style="color: #ff6f00; font-size: 24px;">Bienvenido al gimnasio, administrador ${nameAdministrador} 🏋️‍♂️</h1>
 
@@ -218,46 +259,87 @@ export class gymServices {
     <p style="font-size: 14px; color: #cccccc;">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
   </div>
 `;
-    await this.sendMail.sendEmail(email, html, subject);
-    return assignUserToGym;
+      await this.sendMail.sendEmail(email, html, subject);
+      await querybuilder.commitTransaction();
+      await this.dashboardService.updateDatasInformation();
+      return assignUserToGym;
+    } catch (error) {
+      await querybuilder.rollbackTransaction();
+      throw error;
+    } finally {
+      await querybuilder.release();
+    }
   }
 
   async getInformation() {
     const getGymAndUser = await this.gymRepository
-      .createQueryBuilder("gm")
+      .createQueryBuilder('gm')
       .select([
-        "gm.logo",
-        "gm.name",
-        "gm.createdAt",
-        "ad.username",
-      
+        'gm.logo',
+        'gm.name',
+        'gm.createdAt',
+        'ad.username',
+
         `(SELECT COUNT(*) 
           FROM gym_user gu 
           INNER JOIN "user" u ON gu."userIdentification" = u."identification" 
           WHERE gu."gymId" = gm.id AND u.rol = 'customer' AND gu."deletedAt" IS NULL AND u."deletedAt" IS NULL
         ) AS "customerCount"`,
-  
+
         // Contar 'trainers'
         `(SELECT COUNT(*) 
           FROM gym_user gu 
           INNER JOIN "user" u ON gu."userIdentification" = u."identification" 
           WHERE gu."gymId" = gm.id AND u.rol = 'Trainer' AND gu."deletedAt" IS NULL AND u."deletedAt" IS NULL
-        ) AS "trainerCount"`
+        ) AS "trainerCount"`,
       ])
-      .innerJoin("gym_user", "gu", "gu.gymId = gm.id")
-      .innerJoin("user", "ad", "ad.identification = gu.userIdentification AND ad.rol = 'administrador'")
-      .where("gm.deletedAt IS NULL")
-      .andWhere("gu.deletedAt IS NULL")
-      .andWhere("ad.deletedAt IS NULL")
-      .groupBy("gm.id, gm.logo, gm.name, ad.username, gm.createdAt")
+      .innerJoin('gym_user', 'gu', 'gu.gymId = gm.id')
+      .innerJoin(
+        'user',
+        'ad',
+        "ad.identification = gu.userIdentification AND ad.rol = 'administrador'",
+      )
+      .where('gm.deletedAt IS NULL')
+      .andWhere('gu.deletedAt IS NULL')
+      .andWhere('ad.deletedAt IS NULL')
+      .groupBy('gm.id, gm.logo, gm.name, ad.username, gm.createdAt')
 
-      .orderBy("gm.createdAt", "ASC")
+      .orderBy('gm.createdAt', 'ASC')
       .getRawMany();
-  
+
     return getGymAndUser;
   }
-  
-  
-  
+  async ActivateGym(id: string) {
+    const verify = await this.gymRepository.findOne({
+      where: { id: id },
+      withDeleted: true,
+    });
+    if (!verify) {
+      return 'ESE GYMNASIO NO EXISTE';
+    }
+    await this.gymRepository.recover(verify);
+  }
 
+  async getAllCustomer(id: string) {
+    const dataCustomer = await this.gymRepository
+      .createQueryBuilder('gym')
+      .select([
+        'cm.identification',
+        'cm.username as nombre',
+        'cm.email as correo ',
+        'cm.gender',
+        'cm.cellphone',
+        'cm.profilePicture ',
+        'cm.createdAt',
+        'cm.deletedAt',
+      ])
+      .withDeleted() 
+      .leftJoin(GymUser, 'gu', 'gu.gymId = gym.id')
+      .leftJoin(Customer, 'cm', 'cm.identification = gu.userIdentification')
+      .where('gym.id = :id', { id })
+      .andWhere('cm.rol != :rol', { rol: 'administrador' })
+      .getRawMany();
+
+    return dataCustomer;
+  }
 }

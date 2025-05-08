@@ -20,7 +20,11 @@ export class UserController {
     @Param('id') id: string,
     @Body('imageUrl') imageUrl: string,
   ) {
-    return await this.userService.updateProfilePicture(id, imageUrl)
+    return await this.userService.updateProfilePicture(id, imageUrl);
   }
 
+  @Get(':id')
+  async activateUser(@Param('id') id: string) {
+    return await this.userService.activateUser(id);
+  }
 }

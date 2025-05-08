@@ -4,7 +4,6 @@ import * as crypto from 'crypto'; // Asegúrate de importar correctamente
 
 console.log('Crypto cargado:', typeof crypto); // Verifica que se cargó
 
-
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
@@ -21,8 +20,6 @@ console.log('✅ JWT_SECRET desde process.env:', process.env.JWT_SECRET);
 
 //ss
 
-
-
 declare module 'express-session' {
   interface SessionData {
     user: {
@@ -32,7 +29,6 @@ declare module 'express-session' {
       accessToken: string;
       refreshToken: string;
       rol: string;
-      
     };
   }
 }
@@ -40,7 +36,7 @@ declare module 'express-session' {
 async function bootstrap() {
   try {
     const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-console.log("probadno")
+  
     const uploadDir = './uploads';
     if (!existsSync(uploadDir)) {
       mkdirSync(uploadDir, { recursive: true });
@@ -48,7 +44,10 @@ console.log("probadno")
 
     const expressApp = express();
 
-    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+    const app = await NestFactory.create(
+      AppModule,
+      new ExpressAdapter(expressApp),
+    );
 
     app.enableCors();
 

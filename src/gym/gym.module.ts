@@ -16,11 +16,14 @@ import { administrator } from './entity/userAdministrador.entity';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/auth/entity/user.entity';
 import { UploadService } from 'src/uploadFiles/services/upload.service';
+import { DashboardServices } from 'src/dashboard/services/dashboard.service';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
-    ConfigModule, // Carga las variables de entorno
+    ConfigModule,
     PassportModule,
+    DashboardModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -31,10 +34,10 @@ import { UploadService } from 'src/uploadFiles/services/upload.service';
         },
       }),
     }),
-    TypeOrmModule.forFeature([Gym, GymUser, administrator,User]),
+    TypeOrmModule.forFeature([Gym, GymUser, administrator, User]),
     MailModule,
   ],
   controllers: [GymController, GymUserController],
-  providers: [gymServices, GymUserServices,MailService,UploadService],
+  providers: [gymServices, GymUserServices, MailService, UploadService],
 })
 export class GymModule {}

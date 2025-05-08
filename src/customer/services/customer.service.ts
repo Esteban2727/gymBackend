@@ -145,4 +145,17 @@ export class CustomerService {
     }
     return 'dont exit that customer';
   }
+
+  async updateData(id: string, cel: string, username: string): Promise<any> {
+    const updateDataOfRepository = await this.customerRepository
+      .createQueryBuilder()
+      .update(Customer)
+      .set({
+        cellphone: cel,
+        username: username,
+      })
+      .where('identification = :id', { id })
+      .execute();
+    return 'actualizado';
+  }
 }

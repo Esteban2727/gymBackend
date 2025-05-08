@@ -13,6 +13,7 @@ import { TrainerServices } from './trainer.service';
 import { TrainerDto } from './trainer.dto';
 import { AuthGuard } from 'src/guards/JwtAutentication.guard';
 import { Request } from 'express';
+import { updateDto } from 'src/customer/update.dto';
 
 @Controller('trainer')
 export class TrainerController {
@@ -64,5 +65,37 @@ export class TrainerController {
     );
   }
 
+  @Get('get/:id')
+  @UseGuards(AuthGuard)
+  async getDataTrainerByGym(@Param('id') id: string) {
+    const bringData = await this.trainerServices.getDataTrainerByGym(id);
+    console.log(bringData);
+    return bringData;
+  }
+
+  @Get('assign/:idCustomer/:idTrainer')
+  async assignUserToTrainer(@Param() id: string[]) {
+    return await this.trainerServices.assignTrainer(id);
+  }
+  @Get('info/:id')
+  async getInformationTrainer(@Param('id') id: string) {
+    return await this.trainerServices.getTrainerById(id);
+  }
+
+  @Get('customerAssigned/:id')
+  async customerAssignedToTrainer(@Param('id') id: string) {
+    return await this.trainerServices.getCustomersAssigned(id);
+  }
+
+  @Patch('updateData/:id')
+  async updateDataTrainer(
+    @Param('id') id: string,
+    @Body() updateDto: updateDto,
+  ) {
+    const { cel, username } = updateDto;
+    return await this.trainerServices.updateData(id, cel, username);
+  }
+
+  
 
 }

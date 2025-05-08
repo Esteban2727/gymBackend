@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -13,7 +14,7 @@ import { GymDto } from '../DTO/gym.dto';
 import { gymServices } from '../services/gym.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateGymDto } from '../DTO/createGym.dto';
-import path from 'path';
+
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/uploadFiles/services/upload.service';
 
@@ -47,7 +48,7 @@ export class GymController {
       ? await this.uploadService.uploadImage(file)
       : gymDto.logo;
 
-    const { name,logo, primary, secondary } = gymDto;
+    const { name, logo, primary, secondary } = gymDto;
     const VerifyGym = await this.gymServices.verifyDatasGym(
       uploadedImage,
       name,
@@ -84,8 +85,8 @@ export class GymController {
   }
 
   @Delete('delete')
-  async deleteGym(@Param("name") name: string) {
-    console.log(name)
+  async deleteGym(@Query('name') name: string) {
+    console.log(name);
     const deleteGym = await this.gymServices.deleteGymServices(name);
     return deleteGym;
   }
@@ -104,13 +105,14 @@ export class GymController {
 
   @Get('getGym/:id')
   async getGymById(@Param('id') id: string) {
+    console.log(id);
     const getActiveGymByid = await this.gymServices.getActiveGymByid(id);
     return getActiveGymByid;
   }
 
   @Post('create')
   async CreateGym(@Body() createGymDto: CreateGymDto) {
-    console.log("anda aca")
+    console.log('anda aca');
     const {
       cellphone,
       email,
@@ -134,8 +136,18 @@ export class GymController {
     return createUserGym;
   }
 
-  @Get("getAdminAndGym")
-  async getAdminAndGym(){
-    return await this.gymServices.getInformation()
+  @Get('getAdminAndGym')
+  async getAdminAndGym() {
+    return await this.gymServices.getInformation();
+  }
+
+  @Get(':id')
+  async activateGymDeleted(@Param('id') id: string) {
+    return await this.gymServices.ActivateGym(id);
+  }
+
+  @Get('customerAll/:id')
+  async getAllCuatomer(@Param('id') id: string) {
+    return await this.gymServices.getAllCustomer(id);
   }
 }
