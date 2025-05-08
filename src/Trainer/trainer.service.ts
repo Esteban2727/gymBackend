@@ -216,3 +216,4 @@ export class TrainerServices {
       .execute();
     return "actualizado";
 }
+}

@@ -32,7 +32,7 @@ import { TrainerModule } from './Trainer/trainer.module';
 import { Routine } from './rutine/rutine.entity';
 import { RoutineExercise } from './rutine/routineExcersise.entity';
 import { RoutineTrainer } from './rutine/routineTrainer';
-import { routineMOdule } from './rutine/routine.module';
+import { RoutineMOdule } from './rutine/routine.module';
 import { groupMuscleModule } from './groupMuscle/groupMuscle.module';
 import { exerciseGroupMuscularModule } from './exerciseGroupMuscular/exerciseGroupMuscular.module';
 import { administrator } from './gym/entity/userAdministrador.entity';
@@ -105,7 +105,7 @@ import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
     DashboardModule,
     subcriptionModule,
     GateWayModule,
-    routineMOdule,
+    RoutineMOdule,
     TrainerModule,
     groupMuscleModule,
     exerciseGroupMuscularModule,

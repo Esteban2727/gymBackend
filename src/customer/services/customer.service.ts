@@ -156,6 +156,6 @@ export class CustomerService {
       })
       .where('identification = :id', { id })
       .execute();
-    return "actualizado";
+    return 'actualizado';
   }
 }

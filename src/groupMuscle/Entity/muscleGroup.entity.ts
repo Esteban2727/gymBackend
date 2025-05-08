@@ -1,5 +1,5 @@
 import { ExerciseMuscleGroup } from "src/exerciseGroupMuscular/exerciseGroupMuscular.entity";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn } from "typeorm";
 
 
 
@@ -10,6 +10,9 @@ export class MuscleGroup {
 
   @Column()
   name: string;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date; //  Para que funcione soft delete
 
   @OneToMany(() => ExerciseMuscleGroup, (exerciseMuscleGroup) => exerciseMuscleGroup.muscleGroup)
   exerciseMuscleGroups: ExerciseMuscleGroup[];
