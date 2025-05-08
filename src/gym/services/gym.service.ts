@@ -324,6 +324,7 @@ export class gymServices {
     const dataCustomer = await this.gymRepository
       .createQueryBuilder('gym')
       .select([
+        'cm.identification',
         'cm.username as nombre',
         'cm.email as correo ',
         'cm.gender',
@@ -332,10 +333,11 @@ export class gymServices {
         'cm.createdAt',
         'cm.deletedAt',
       ])
+      .withDeleted() 
       .leftJoin(GymUser, 'gu', 'gu.gymId = gym.id')
       .leftJoin(Customer, 'cm', 'cm.identification = gu.userIdentification')
-      .withDeleted()
       .where('gym.id = :id', { id })
+      .andWhere('cm.rol != :rol', { rol: 'administrador' })
       .getRawMany();
 
     return dataCustomer;
