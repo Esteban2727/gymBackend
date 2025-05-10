@@ -21,6 +21,8 @@ import { UploadService } from 'src/uploadFiles/services/upload.service';
 import { changeInformationDto } from '../DTO/updateGtm.dto';
 import { AuthGuard } from 'src/guards/JwtAutentication.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorator/roles.decorator';
+import { rolEnum } from 'src/enum/rol.enum';
 
 @Controller('gym')
 @ApiTags('Gym')
@@ -156,7 +158,9 @@ export class GymController {
   }
 
   @Post('editGym/:id')
-  //@UseGuards(AuthGuard, RolesGuard)
+ // @Roles(rolEnum.administrador)
+ // @UseGuards(AuthGuard, RolesGuard)
+
   async editGym(
     @Body() changeInformationDto: changeInformationDto,
     @Param('id') id: string,

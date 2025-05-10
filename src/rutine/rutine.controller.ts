@@ -30,12 +30,13 @@ export class RoutineController {
     const dRoutine = await this.routineService.deleteServiceRoutine(name);
     return dRoutine;
   }
-  @Post('createRoutine')
-  async createRoutine(@Body() nameDTO: RoutineDto) {
+  @Post('createRoutine/:id')
+  async createRoutine(@Body() nameDTO: RoutineDto, @Param('id') id: string) {
     const { name, description } = nameDTO;
     const routine = await this.routineService.createServiceRoutine(
       name,
       description,
+      id,
     );
     return routine;
   }
