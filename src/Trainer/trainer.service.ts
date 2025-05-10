@@ -159,12 +159,11 @@ export class TrainerServices {
 
     const verifyExistingAssign = await this.trainerCustomer.findOne({
       where: {
-        trainer: { identification: idTrainer },
         customer: { identification: idCustomer },
       },
     });
     if (verifyExistingAssign) {
-      return 'ya fue asignado ese entrenador a ese usuario';
+      return 'ya fue asignado ese usuario a un entrenador';
     }
 
     const assignTrainerToCustomer = await this.trainerCustomer

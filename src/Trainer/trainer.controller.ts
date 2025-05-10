@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -95,7 +94,4 @@ export class TrainerController {
     const { cel, username } = updateDto;
     return await this.trainerServices.updateData(id, cel, username);
   }
-
-  
-
 }

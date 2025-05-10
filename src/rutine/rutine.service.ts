@@ -112,4 +112,16 @@ export class RoutineService {
       .getRawMany();
     return getRoutinesTrainer;
   }
+
+  async getTrainerWithRoutine(id: string) {
+    const verifyIdTrainer = await this.routineRepository
+      .createQueryBuilder('r')
+      .select(['r.name', 'r.description'])
+      .leftJoin(RoutineTrainer, 'rt', 'rt.routineId = r.id')
+      .leftJoin(Trainer, 'tr', 'tr.identification = rt.trainerIdentification')
+      .where('tr.identification = :id', { id })
+      .getRawMany();
+
+    return verifyIdTrainer;
+  }
 }

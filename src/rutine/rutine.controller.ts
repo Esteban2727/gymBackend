@@ -55,4 +55,9 @@ export class RoutineController {
     const storage = await this.routineService.serviceRoutinesTrainers(id);
     return storage;
   }
+
+  @Get('routineTrainerById/:id')
+  async getRoutineById(@Param('id') id: string) {
+    return await this.routineService.getTrainerWithRoutine(id);
+  }
 }
