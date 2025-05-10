@@ -10,6 +10,7 @@ import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/auth/entity/user.entity';
 import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 import { Customer } from 'src/customer/customer.entity';
+import { error } from 'console';
 
 @Injectable()
 export class gymServices {
@@ -333,7 +334,7 @@ export class gymServices {
         'cm.createdAt',
         'cm.deletedAt',
       ])
-      .withDeleted() 
+      .withDeleted()
       .leftJoin(GymUser, 'gu', 'gu.gymId = gym.id')
       .leftJoin(Customer, 'cm', 'cm.identification = gu.userIdentification')
       .where('gym.id = :id', { id })
@@ -341,5 +342,32 @@ export class gymServices {
       .getRawMany();
 
     return dataCustomer;
+  }
+
+  async chamgeInformationGym(name: string, id: string): Promise<string> {
+    const verifyGym = await this.gymRepository.findOne({
+      where: { id: id },
+    });
+    if (!verifyGym) {
+      throw error('ese gimnasio no existe');
+    }
+    const convert = name.toLowerCase().replace(' ', '').trim();
+    console.log(convert);
+
+    const verifyName = await this.gymRepository.find({
+      where: { name: convert },
+    });
+    if (verifyName) {
+      return `el nombre del gimnasio ${name} ya existe`;
+    }
+    await this.gymRepository
+      .createQueryBuilder()
+      .update(Gym)
+      .set({
+        name: name,
+      })
+      .where('id = :id', { id })
+      .execute();
+    return 'Cambios realizados';
   }
 }

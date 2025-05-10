@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { GymDto } from '../DTO/gym.dto';
@@ -17,6 +18,9 @@ import { CreateGymDto } from '../DTO/createGym.dto';
 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/uploadFiles/services/upload.service';
+import { changeInformationDto } from '../DTO/updateGtm.dto';
+import { AuthGuard } from 'src/guards/JwtAutentication.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('gym')
 @ApiTags('Gym')
@@ -149,5 +153,16 @@ export class GymController {
   @Get('customerAll/:id')
   async getAllCuatomer(@Param('id') id: string) {
     return await this.gymServices.getAllCustomer(id);
+  }
+
+  @Post('editGym/:id')
+  //@UseGuards(AuthGuard, RolesGuard)
+  async editGym(
+    @Body() changeInformationDto: changeInformationDto,
+    @Param('id') id: string,
+  ) {
+    const { name } = changeInformationDto;
+
+    return await this.gymServices.chamgeInformationGym(name, id);
   }
 }

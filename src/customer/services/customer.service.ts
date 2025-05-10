@@ -52,6 +52,13 @@ export class CustomerService {
       where: [{ identification: identification }, { email: email }],
       withDeleted: true,
     });
+
+    const verifyEmail = await this.userReposotory.findOne({
+      where: { email: email },
+    });
+    if (verifyEmail) {
+      return ' ese correo ya existe, usa otro ';
+    }
     console.log(verifyExistingCustomer, 'sss');
     if (verifyExistingCustomer) {
       return 'this customer existing already';
