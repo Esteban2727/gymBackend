@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Routine } from './rutine.entity';
 import { UpdateRoutineDto } from './DTO/update-routine.dto';
 import { RoutineTrainer } from './routineTrainer';
@@ -11,6 +11,9 @@ import { GymUser } from 'src/gym/gymUser.entity';
 export class RoutineService {
   constructor(
     @InjectRepository(Routine) readonly routineRepository: Repository<Routine>,
+    @InjectRepository(RoutineTrainer)
+    readonly routineTrainerRepository: Repository<RoutineTrainer>,
+    private readonly dataSource: DataSource,
   ) {}
   async getServiceRoutines() {
     const getAllRoutines = await this.routineRepository.find({
@@ -38,20 +41,47 @@ export class RoutineService {
     await this.routineRepository.softRemove(routinetoDelete);
     return { mensaje: 'Ejercico eliminado exitosamente (soft delete)' };
   }
-  async createServiceRoutine(name: string, description: string) {
+  async createServiceRoutine(name: string, description: string, id: string) {
     const findRoutine = await this.routineRepository.findOne({
       where: { name },
-      withDeleted: false, //verifica que no revise los que estaban eliminados
+      withDeleted: false,
     });
     if (findRoutine) {
       return { Advertencia: 'Rutina existente' };
     }
-    const newRoutine = this.routineRepository.create({
-      name: name,
-      description: description,
-    });
-    await this.routineRepository.save(newRoutine);
-    return newRoutine;
+    const querybuilder = await this.dataSource.createQueryRunner();
+    await querybuilder.connect();
+    await querybuilder.startTransaction();
+
+    try {
+      const newRoutine = await querybuilder.manager
+        .createQueryBuilder()
+        .insert()
+        .into(Routine)
+        .values({
+          name: name,
+          description: description,
+        })
+        .returning('id')
+        .execute();
+
+      const insertRoutineWithTrainer = await querybuilder.manager
+        .createQueryBuilder()
+        .insert()
+        .into(RoutineTrainer)
+        .values({
+          routine: { id: newRoutine.raw[0].id },
+          trainer: { identification: id },
+        })
+        .execute();
+      await querybuilder.commitTransaction();
+      return newRoutine;
+    } catch (e) {
+      await querybuilder.rollbackTransaction();
+      return 'error al realizar la transaccion ';
+    } finally {
+      await querybuilder.release();
+    }
   }
   async updateServiceRoutine(id: number, updateDto: UpdateRoutineDto) {
     const verificate = await this.routineRepository.findOne({

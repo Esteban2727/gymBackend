@@ -25,24 +25,22 @@ import { MailService } from 'src/mail/mail.service';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h' },
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '2h',
+        },
       }),
     }),
     TypeOrmModule.forFeature([User, Subscription]),
-    MailModule,  
+    MailModule,
   ],
-  controllers: [
-    RegisterController,
-    LoginController,
-    RecoverPasswordController,
-  ],
+  controllers: [RegisterController, LoginController, RecoverPasswordController],
   providers: [
     RegisterService,
     loginServices,
     RecoverPasswordServices,
     JwtStrategy,
-    MailService
+    MailService,
   ],
-  exports:[JwtStrategy]
+  exports: [JwtStrategy],
 })
 export class AuthModule {}

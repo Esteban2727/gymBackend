@@ -1,6 +1,5 @@
-export enum rolEnum{
-  admin="administrador",
-  entrenador="trainer",
-  cliente="customer",
-  recepcionista="receptionist",
+export enum rolEnum {
+  administrador = 'administrador',
+  trainer = 'trainer',
+  customer = 'customer',
 }

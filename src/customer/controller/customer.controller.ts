@@ -49,7 +49,7 @@ export class CustomerController {
   }
   @Get(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(rolEnum.cliente)
+  @Roles(rolEnum.customer)
   @ApiOperation({
     summary: 'Get customer by ID',
     description: 'Retrieve customer details by their identification number.',
