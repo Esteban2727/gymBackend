@@ -280,6 +280,7 @@ export class gymServices {
         'gm.name',
         'gm.createdAt',
         'ad.username',
+        'gm.id',
 
         `(SELECT COUNT(*) 
           FROM gym_user gu 

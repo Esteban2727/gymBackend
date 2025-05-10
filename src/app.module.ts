@@ -39,6 +39,7 @@ import { administrator } from './gym/entity/userAdministrador.entity';
 import { exerciseModules } from './exercises/exercise.module';
 import { pruebaModule } from './pruebasArchivos/prueba.module';
 import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
+import { max } from 'class-validator';
 
 @Module({
   imports: [
@@ -58,6 +59,9 @@ import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
 
         ssl: {
           rejectUnauthorized: false,
+        },
+        extra: {
+          max: 10,
         },
       }),
     }),
@@ -94,7 +98,7 @@ import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
       RoutineExercise,
       RoutineTrainer,
       administrator,
-      TrainerCustomer
+      TrainerCustomer,
     ]),
     AuthModule,
     CustomerModule,

@@ -158,9 +158,8 @@ export class GymController {
   }
 
   @Post('editGym/:id')
- // @Roles(rolEnum.administrador)
- // @UseGuards(AuthGuard, RolesGuard)
-
+  // @Roles(rolEnum.administrador)
+  // @UseGuards(AuthGuard, RolesGuard)
   async editGym(
     @Body() changeInformationDto: changeInformationDto,
     @Param('id') id: string,

@@ -213,6 +213,6 @@ export class TrainerServices {
       })
       .where('identification = :id', { id })
       .execute();
-    return "actualizado";
-}
+    return 'actualizado';
+  }
 }
