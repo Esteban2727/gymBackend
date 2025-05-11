@@ -116,7 +116,7 @@ export class gymServices {
 
       await querybuilder.manager.softRemove(verifyGym);
       await querybuilder.commitTransaction();
-      await this.dashboardService.updateDatasInformation();
+      await this.dashboardService.emitFullDashboardUpdate();
     } catch (error) {
       await querybuilder.rollbackTransaction();
       throw error;
@@ -260,9 +260,10 @@ export class gymServices {
     <p style="font-size: 14px; color: #cccccc;">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
   </div>
 `;
+      await this.dashboardService.emitFullDashboardUpdate();
       await this.sendMail.sendEmail(email, html, subject);
       await querybuilder.commitTransaction();
-      await this.dashboardService.updateDatasInformation();
+      
       return assignUserToGym;
     } catch (error) {
       await querybuilder.rollbackTransaction();
