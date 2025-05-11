@@ -16,7 +16,10 @@ export class DashboardServices {
     @InjectRepository(GymUser)
     private readonly GymUserRepository: Repository<GymUser>,
 
-    private readonly socketGateway: SocketGateway,
+    @InjectRepository(Gym)
+    private readonly gymRepository: Repository<Gym>,
+
+     readonly socketGateway: SocketGateway,
   ) {}
 
   async getDatasInformation(gender: string): Promise<string> {
@@ -30,7 +33,7 @@ export class DashboardServices {
   }
 
   async getDatasinformationActive(): Promise<any> {
-    return this.GymUserRepository.createQueryBuilder('gymUser')
+    const data = await this.GymUserRepository.createQueryBuilder('gymUser')
       .select('gym.id', 'gymId')
       .addSelect('gym.name', 'gymName')
       .addSelect('COUNT(gymUser.id)', 'activeUserCount')
@@ -45,6 +48,9 @@ export class DashboardServices {
       .addGroupBy('gym.name')
       .orderBy('gym.name', 'DESC')
       .getRawMany();
+
+    this.socketGateway.emitDashboardUpdate({ activeUsersByGym: data });
+    return data;
   }
 
   async updateDatasInformation(): Promise<void> {
@@ -55,7 +61,7 @@ export class DashboardServices {
   }
 
   async PersonasByGym() {
-    return await this.userRepository
+    const data = await this.userRepository
       .createQueryBuilder('u')
       .innerJoin('u.gymUsers', 'gu')
       .innerJoin('gu.gym', 'g')
@@ -65,6 +71,9 @@ export class DashboardServices {
       .groupBy('g.id')
       .addGroupBy('g.name')
       .getRawMany();
+
+    this.socketGateway.emitDashboardUpdate({ peopleByGym: data });
+    return data;
   }
 
   async getDatasInformationGenderByGym(gender: string, gymId: string) {
@@ -91,6 +100,54 @@ export class DashboardServices {
         : '0.00';
 
     this.socketGateway.emitDashboardUpdate({ percentageMale: percentage });
+  }
 
+  async getGymsActiveInactivePercentage(): Promise<{
+    active: string;
+    inactive: string;
+  }> {
+    const activeCount = await this.gymRepository.count({
+      where: { deletedAt: null },
+    });
+    const totalCount = await this.gymRepository.count({ withDeleted: true });
+    const inactiveCount = totalCount - activeCount;
+
+    const activePercentage =
+      totalCount > 0 ? ((activeCount / totalCount) * 100).toFixed(2) : '0.00';
+    const inactivePercentage =
+      totalCount > 0 ? ((inactiveCount / totalCount) * 100).toFixed(2) : '0.00';
+
+    const payload = {
+      active: `${activePercentage}%`,
+      inactive: `${inactivePercentage}%`,
+    };
+    this.socketGateway.emitDashboardUpdate({ gymStatus: payload });
+    return payload;
+  }
+
+  async getUsersRegisteredByMonth(): Promise<any[]> {
+    const data = await this.userRepository
+      .createQueryBuilder('user')
+      .select(`TO_CHAR(user.createdAt, 'YYYY-MM')`, 'month')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('month')
+      .orderBy('month', 'ASC')
+      .getRawMany();
+
+    this.socketGateway.emitDashboardUpdate({ usersPerMonth: data });
+    return data;
+  }
+
+  async getBrandColorStats(): Promise<any[]> {
+    const data = await this.gymRepository
+      .createQueryBuilder('gym')
+      .select('gym.primary', 'color')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('gym.primary')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+
+    this.socketGateway.emitDashboardUpdate({ brandColors: data });
+    return data;
   }
 }
