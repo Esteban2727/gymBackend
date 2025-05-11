@@ -10,6 +10,7 @@ import { DashboardServices } from './services/dashboard.service';
 import { SocketGateway } from 'src/gateways/socket.gateway';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Gym } from 'src/gym/gym.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
       }),
     }),
-    TypeOrmModule.forFeature([User, GymUser]),
+    TypeOrmModule.forFeature([User, GymUser,Gym]),
     MailModule,
   ],
   controllers: [DashboardController],
