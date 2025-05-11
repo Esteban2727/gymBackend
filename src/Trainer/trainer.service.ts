@@ -9,6 +9,7 @@ import { MailService } from 'src/mail/mail.service';
 import { Gym } from 'src/gym/gym.entity';
 import { TrainerCustomer } from './trainerCustomer.entity';
 import { Customer } from 'src/customer/customer.entity';
+import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 
 @Injectable()
 export class TrainerServices {
@@ -27,6 +28,7 @@ export class TrainerServices {
     readonly trainerCustomer: Repository<TrainerCustomer>,
     @InjectRepository(Customer)
     readonly customerRepository: Repository<Customer>,
+    private readonly dashboardService: DashboardServices,
   ) {}
 
   async getDataTrainer() {
@@ -106,7 +108,7 @@ export class TrainerServices {
           <p style="font-size: 14px; color: ${third};">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
         </div>
       `;
-
+      await this.dashboardService.emitFullDashboardUpdate();
       await this.sendMail.sendEmail(email, html, subject);
 
       await queryRunner.commitTransaction();

@@ -7,6 +7,7 @@ import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Gym } from 'src/gym/gym.entity';
+import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 
 export class CustomerService {
   constructor(
@@ -21,6 +22,7 @@ export class CustomerService {
     private readonly sendMail: MailService,
     @InjectRepository(Gym)
     readonly GymRepository: Repository<Gym>,
+    private readonly dashboardService: DashboardServices,
   ) {}
   async GetCustomerById(ident: string) {
     const bringDatas = await this.userReposotory.find({
@@ -110,6 +112,7 @@ export class CustomerService {
     <p style="font-size: 14px; color: ${third};">¡Gracias por unirte! Estamos emocionados de acompañarte en tu camino al éxito. 💪</p>
   </div>
 `;
+    await this.dashboardService.emitFullDashboardUpdate();
     await this.sendMail.sendEmail(email, html, subject);
     return 'created succefully';
   }
@@ -147,7 +150,7 @@ export class CustomerService {
       await this.GymuserRepository.softRemove(Gymuser);
 
       await this.customerRepository.softRemove(verifyExisting);
-
+      await this.dashboardService.emitFullDashboardUpdate();
       return 'deleted';
     }
     return 'dont exit that customer';

@@ -18,6 +18,7 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { registerDTO } from 'src/auth/DTO/register.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { updateDto } from '../update.dto';
+import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 
 @Controller('customer')
 @ApiTags('Customer')
@@ -100,6 +101,7 @@ export class CustomerController {
     console.log(id);
     const deleteCustomer = await this.CustomerService.deleteCustomer(id);
     console.log(deleteCustomer);
+
     return deleteCustomer;
   }
 

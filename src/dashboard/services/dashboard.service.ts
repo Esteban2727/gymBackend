@@ -150,4 +150,27 @@ export class DashboardServices {
     this.socketGateway.emitDashboardUpdate({ brandColors: data });
     return data;
   }
+
+  async emitFullDashboardUpdate() {
+    const genderMale = await this.getDatasInformation('male');
+    const people = await this.PersonasByGym();
+    const activeUsers = await this.getDatasinformationActive();
+    const colors = await this.getBrandColorStats();
+    const gyms = await this.getGymsActiveInactivePercentage();
+    const usersByMonth = await this.getUsersRegisteredByMonth();
+
+    const payload = {
+      genderMale,
+      people,
+      activeUsers,
+      colors,
+      gyms,
+      usersByMonth,
+    };
+
+    this.socketGateway.emitDashboardUpdate(payload);
+    return payload;
+  }
+
+
 }
