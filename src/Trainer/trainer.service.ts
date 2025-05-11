@@ -159,6 +159,13 @@ export class TrainerServices {
   async assignTrainer(id: any) {
     const { idCustomer, idTrainer } = id;
 
+    const verifyExistingCustomer = await this.trainerCustomer.findOne({
+      where: { customer: { identification: idCustomer } },
+    });
+    if (verifyExistingCustomer) {
+      return 'este usuario ya tiene un profesor asignado';
+    }
+
     const verifyExistingAssign = await this.trainerCustomer.findOne({
       where: {
         customer: { identification: idCustomer },
