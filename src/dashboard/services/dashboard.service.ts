@@ -259,9 +259,9 @@ export class DashboardServices {
     return { trainerCustomerPercentage: percentage };
   }
 
-  async emitFullDashboardUpdateTrainer(id:string) {
+  async emitFullDashboardUpdateTrainer(id: string) {
     const data1 = await this.getDatasInformationGenderByTrainer('male', id);
-    const data2 = await this.getDatasInformationGenderByGym('male', id);
+    const data2 = await this.getDatasInformationByTrainer(id);
 
     const payload = {
       data1,

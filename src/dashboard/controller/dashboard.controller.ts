@@ -37,10 +37,7 @@ export class DashboardController {
         'male',
         id,
       );
-    const data2 = await this.dashboardServices.getDatasInformationGenderByGym(
-      'male',
-      id,
-    );
+    const data2 = await this.dashboardServices.getDatasInformationByTrainer(id);
 
     const payload = {
       data1,
