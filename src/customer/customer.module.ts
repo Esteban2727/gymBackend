@@ -13,11 +13,13 @@ import { Customer } from './customer.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailService } from 'src/mail/mail.service';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
-    ConfigModule, // Carga las variables de entorno
+    ConfigModule,
     PassportModule,
+    DashboardModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

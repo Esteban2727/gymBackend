@@ -12,11 +12,13 @@ import { Gym } from 'src/gym/gym.entity';
 import { MailService } from 'src/mail/mail.service';
 import { TrainerCustomer } from './trainerCustomer.entity';
 import { Customer } from 'src/customer/customer.entity';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
-    ConfigModule, // Carga las variables de entorno
+    ConfigModule, 
     PassportModule,
+    DashboardModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
