@@ -23,8 +23,13 @@ export class UserController {
     return await this.userService.updateProfilePicture(id, imageUrl);
   }
 
-  @Get(':id')
-  async activateUser(@Param('id') id: string) {
-    return await this.userService.activateUser(id);
+  @Patch('activate/:id')
+  async activate(@Param('id') id: string) {
+    return await this.userService.activateCustomerAndTrainer(id);
+  }
+
+  @Delete('deleteAll/:id')
+  async delete(@Param('id') id: string) {
+    return await this.userService.softRemoveCustomerAndTrainer(id);
   }
 }

@@ -1,18 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { User } from '../../auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { Gym } from 'src/gym/gym.entity';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 import { Trainer } from 'src/Trainer/trainer.entity';
+import { RoutineTrainer } from 'src/rutine/routineTrainer';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(GymUser)
+    private gymUserRepository: Repository<GymUser>,
+
+    @InjectRepository(TrainerCustomer)
+    private trainerCustomerRepository: Repository<TrainerCustomer>,
+
+    @InjectRepository(RoutineTrainer)
+    private routineTrainerRepository: Repository<RoutineTrainer>,
+
+    @InjectRepository(Subscription)
+    private subscriptionRepository: Repository<Subscription>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async getAllUser() {
@@ -21,7 +35,7 @@ export class UserService {
     });
   }
   async getUserById(id: string) {
-     const data = await this.userRepository
+    const data = await this.userRepository
       .createQueryBuilder('us')
       .select([
         'us.username',
@@ -56,8 +70,7 @@ export class UserService {
       .leftJoin(Trainer, 'tr', 'tm.trainerIdentification = tr.identification')
       .getRawOne();
 
-      
-      return data
+    return data;
   }
 
   async updateProfilePicture(userId: string, imageUrl: string) {
@@ -71,16 +84,125 @@ export class UserService {
     await this.userRepository.save(user);
     return user;
   }
+  async activateCustomerAndTrainer(id: string) {
+    return await this.dataSource.transaction(async (manager) => {
+      const user = await manager.getRepository(User).findOne({
+        where: { identification: id },
+        withDeleted: true,
+      });
 
-  async activateUser(id: string) {
-    const verify = await this.userRepository.findOne({
-      where: { identification: id },
-      withDeleted: true,
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      // Recuperar usuario
+      await manager.getRepository(User).recover(user);
+
+      // Recuperar gym_user
+      const gymUsers = await manager.getRepository(GymUser).find({
+        where: { user: { identification: id } },
+        withDeleted: true,
+      });
+      for (const gymUser of gymUsers) {
+        await manager.getRepository(GymUser).recover(gymUser);
+      }
+
+      // Recuperar trainer_customer donde sea entrenador o cliente
+      const trainerCustomers = await manager
+        .getRepository(TrainerCustomer)
+        .find({
+          where: [
+            { trainer: { identification: id } },
+            { customer: { identification: id } },
+          ],
+          withDeleted: true,
+        });
+      for (const tc of trainerCustomers) {
+        await manager.getRepository(TrainerCustomer).recover(tc);
+      }
+
+      // Recuperar routine_trainer (donde sea entrenador)
+      const routineTrainers = await manager.getRepository(RoutineTrainer).find({
+        where: { trainer: { identification: id } },
+        withDeleted: true,
+      });
+      for (const rt of routineTrainers) {
+        await manager.getRepository(RoutineTrainer).recover(rt);
+      }
+
+      // Recuperar subscriptions (donde sea cliente)
+      const subscriptions = await manager.getRepository(Subscription).find({
+        where: { customer: { identification: id } },
+        withDeleted: true,
+      });
+      for (const sub of subscriptions) {
+        await manager.getRepository(Subscription).recover(sub);
+      }
+
+      return {
+        success: true,
+        message: 'Usuario y relaciones reactivados con recover y transacción',
+      };
     });
-    if (!verify) {
-      return 'ese usuario no esta en la base de datos';
-    }
-    await this.userRepository.recover(verify);
-    return 'agregado de nuevo';
+  }
+
+  async softRemoveCustomerAndTrainer(id: string) {
+    return await this.dataSource.transaction(async (manager) => {
+      // Buscar usuario con relaciones
+      const user = await manager.getRepository(User).findOne({
+        where: { identification: id },
+      });
+
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      // SoftRemove - GymUser
+      const gymUsers = await manager.getRepository(GymUser).find({
+        where: { user: { identification: id } },
+      });
+      if (gymUsers.length > 0) {
+        await manager.getRepository(GymUser).softRemove(gymUsers);
+      }
+
+      // SoftRemove - TrainerCustomer
+      const trainerCustomers = await manager
+        .getRepository(TrainerCustomer)
+        .find({
+          where: [
+            { trainer: { identification: id } },
+            { customer: { identification: id } },
+          ],
+        });
+      if (trainerCustomers.length > 0) {
+        await manager
+          .getRepository(TrainerCustomer)
+          .softRemove(trainerCustomers);
+      }
+
+      // SoftRemove - RoutineTrainer
+      const routineTrainers = await manager.getRepository(RoutineTrainer).find({
+        where: { trainer: { identification: id } },
+      });
+      if (routineTrainers.length > 0) {
+        await manager.getRepository(RoutineTrainer).softRemove(routineTrainers);
+      }
+
+      // SoftRemove - Subscriptions
+      const subscriptions = await manager.getRepository(Subscription).find({
+        where: { customer: { identification: id } },
+      });
+      if (subscriptions.length > 0) {
+        await manager.getRepository(Subscription).softRemove(subscriptions);
+      }
+
+      // Finalmente, softRemove del usuario
+      await manager.getRepository(User).softRemove(user);
+
+      return {
+        success: true,
+        message: 'Usuario y sus relaciones eliminados (soft)',
+      };
+    });
   }
 }

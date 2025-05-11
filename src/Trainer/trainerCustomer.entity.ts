@@ -5,6 +5,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Trainer } from './trainer.entity';
 import { Customer } from '../customer/customer.entity';
@@ -13,6 +14,8 @@ import { Customer } from '../customer/customer.entity';
 export class TrainerCustomer {
   @PrimaryGeneratedColumn()
   id: number;
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 
   @ManyToOne(() => Trainer, (trainer) => trainer.customers)
   @JoinColumn({ name: 'trainerIdentification' })
