@@ -113,6 +113,7 @@ export class CustomerService {
   </div>
 `;
     await this.dashboardService.emitFullDashboardUpdate();
+    
     await this.sendMail.sendEmail(email, html, subject);
     return 'created succefully';
   }
