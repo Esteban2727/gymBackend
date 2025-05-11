@@ -355,9 +355,10 @@ export class gymServices {
     const convert = name.toLowerCase().replace(' ', '').trim();
     console.log(convert);
 
-    const verifyName = await this.gymRepository.find({
+    const verifyName = await this.gymRepository.findOne({
       where: { name: convert },
     });
+    console.log(verifyGym,11)
     if (verifyName) {
       return `el nombre del gimnasio ${name} ya existe`;
     }
