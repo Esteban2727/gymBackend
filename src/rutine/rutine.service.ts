@@ -129,6 +129,7 @@ export class RoutineService {
     const getRoutinesTrainer = await this.routineRepository
       .createQueryBuilder('r')
       .select([
+        'r.id',
         'r.name',
         'r.description',
         'tr.identification',
@@ -146,7 +147,7 @@ export class RoutineService {
   async getTrainerWithRoutine(id: string) {
     const verifyIdTrainer = await this.routineRepository
       .createQueryBuilder('r')
-      .select(['r.name', 'r.description'])
+      .select(['r.name', 'r.description', 'r.id'])
       .leftJoin(RoutineTrainer, 'rt', 'rt.routineId = r.id')
       .leftJoin(Trainer, 'tr', 'tr.identification = rt.trainerIdentification')
       .where('tr.identification = :id', { id })

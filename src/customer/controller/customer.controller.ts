@@ -49,8 +49,8 @@ export class CustomerController {
     return sendDataToService;
   }
   @Get(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(rolEnum.customer)
+  //@UseGuards(AuthGuard, RolesGuard)
+  //@Roles(rolEnum.customer)
   @ApiOperation({
     summary: 'Get customer by ID',
     description: 'Retrieve customer details by their identification number.',
@@ -68,11 +68,8 @@ export class CustomerController {
     },
   })
   @ApiResponse({ status: 404, description: 'Customer not found' })
-  async GetCustomer(@Param('id') id: registerDTO) {
-    const { identification } = id;
-    const searchCustomer =
-      await this.CustomerService.GetCustomerById(identification);
-    return searchCustomer;
+  async GetCustomer(@Param('id') id: string) {
+    return await this.CustomerService.GetCustomerById(id);
   }
 
   @Get()

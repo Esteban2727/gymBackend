@@ -157,7 +157,7 @@ export class GymController {
     return await this.gymServices.getAllCustomer(id);
   }
 
-  @Post('editGym/:id')
+  @Patch('editGym/:id')
   // @Roles(rolEnum.administrador)
   // @UseGuards(AuthGuard, RolesGuard)
   async editGym(
