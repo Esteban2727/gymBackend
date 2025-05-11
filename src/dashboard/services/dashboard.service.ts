@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { SocketGateway } from '../../gateways/socket.gateway';
 import { User } from 'src/auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { Gym } from 'src/gym/gym.entity';
+import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 
 @Injectable()
 export class DashboardServices {
@@ -19,7 +20,8 @@ export class DashboardServices {
     @InjectRepository(Gym)
     private readonly gymRepository: Repository<Gym>,
 
-     readonly socketGateway: SocketGateway,
+    readonly socketGateway: SocketGateway,
+    readonly dataSource: DataSource,
   ) {}
 
   async getDatasInformation(gender: string): Promise<string> {
@@ -172,5 +174,101 @@ export class DashboardServices {
     return payload;
   }
 
+  async getDatasInformationGenderByTrainer(gender: string, trainerId: string) {
+    // Total de clientes asignados al entrenador
+    const totalCustomers = await this.userRepository
+      .createQueryBuilder('u')
+      .innerJoin(
+        TrainerCustomer,
+        'tc',
+        'tc.customerIdentification = u.identification',
+      )
+      .where('tc.trainerIdentification = :trainerId', { trainerId })
+      .andWhere('u.rol != :rol', { rol: 'administrador' })
+      .getCount();
 
+    // Total de clientes de cierto género asignados al entrenador
+    const genderCount = await this.userRepository
+      .createQueryBuilder('u')
+      .innerJoin(
+        TrainerCustomer,
+        'tc',
+        'tc.customerIdentification = u.identification',
+      )
+      .where('tc.trainerIdentification = :trainerId', { trainerId })
+      .andWhere('u.gender = :gender', { gender })
+      .andWhere('u.rol != :rol', { rol: 'administrador' })
+      .getCount();
+
+    const percentage =
+      totalCustomers > 0
+        ? ((genderCount / totalCustomers) * 100).toFixed(2)
+        : '0.00';
+
+    this.socketGateway.emitDashboardUpdate({ percentageMale: percentage });
+
+    return { percentageMale: percentage };
+  }
+
+  async getDatasInformationByTrainer(trainerId: string) {
+    console.log(trainerId, 2222222);
+    const gymUser = await this.GymUserRepository.createQueryBuilder('gu')
+      .select(['gu.gymId'])
+      .leftJoin(User, 'us', 'us.identification = gu.userIdentification')
+      .where('gu.userIdentification = :trainerId', { trainerId })
+      .getRawOne();
+
+    if (!gymUser) {
+      throw new Error('Entrenador no asignado a ningún gimnasio');
+    }
+    console.log(gymUser, 222431);
+
+    // Total de usuarios del gimnasio, excluyendo administradores y entrenadores
+    const totalUsersInGym = await this.userRepository
+      .createQueryBuilder('u')
+      .innerJoin(GymUser, 'gu', 'gu.userIdentification = u.identification')
+      .where('gu.gymId = :gymId', { gymId: gymUser.gymId })
+      .andWhere('u.rol = :rol', { rol: 'Trainer' })
+      .getCount();
+
+    console.log(totalUsersInGym, 3333);
+
+    // Total de clientes asignados al entrenador
+    const customerCount = await this.userRepository
+      .createQueryBuilder('u')
+      .innerJoin(
+        TrainerCustomer,
+        'tc',
+        'tc.customerIdentification = u.identification',
+      )
+      .where('tc.trainerIdentification = :trainerId', { trainerId })
+      .andWhere('u.rol != :rol', { rol: 'administrador' }) // por si acaso
+      .getCount();
+
+    console.log(customerCount, 45444);
+
+    const percentage =
+      totalUsersInGym > 0
+        ? ((customerCount / totalUsersInGym) * 100).toFixed(2)
+        : '0.00';
+
+    this.socketGateway.emitDashboardUpdate({
+      trainerCustomerPercentage: percentage,
+    });
+
+    return { trainerCustomerPercentage: percentage };
+  }
+
+  async emitFullDashboardUpdateTrainer(id:string) {
+    const data1 = await this.getDatasInformationGenderByTrainer('male', id);
+    const data2 = await this.getDatasInformationGenderByGym('male', id);
+
+    const payload = {
+      data1,
+      data2,
+    };
+
+    this.socketGateway.emitDashboardUpdate(payload);
+    return payload;
+  }
 }

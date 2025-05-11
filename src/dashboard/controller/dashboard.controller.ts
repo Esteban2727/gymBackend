@@ -32,9 +32,35 @@ export class DashboardController {
 
   @Post('emitAdmin/:id')
   async emitDashboardAdmin(@Param('id') id: string) {
-    return await this.dashboardServices.getDatasInformationGenderByGym(
+    const data1 =
+      await this.dashboardServices.getDatasInformationGenderByTrainer(
+        'male',
+        id,
+      );
+    const data2 = await this.dashboardServices.getDatasInformationGenderByGym(
       'male',
       id,
     );
+
+    const payload = {
+      data1,
+      data2,
+    };
+
+    this.dashboardServices.socketGateway.emitDashboardUpdate(payload);
+    return payload;
+  }
+
+  @Post('emitTrainer/:id')
+  async emitDashboardTrainer(@Param('id') id: string) {
+    return await this.dashboardServices.getDatasInformationGenderByTrainer(
+      'male',
+      id,
+    );
+  }
+
+  @Post('emitTotal/:id')
+  async emitDashboardTrainerInGym(@Param('id') id: string) {
+    return await this.dashboardServices.getDatasInformationByTrainer(id);
   }
 }

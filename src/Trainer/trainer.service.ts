@@ -183,6 +183,7 @@ export class TrainerServices {
         trainer: idTrainer,
       })
       .execute();
+    await this.dashboardService.emitFullDashboardUpdateTrainer(idTrainer);
 
     return assignTrainerToCustomer;
   }
