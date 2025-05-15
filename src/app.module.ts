@@ -119,10 +119,11 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module';
     pruebaModule,
     BullModule.forRoot({
       connection: {
-        host: 'host.docker.internal',
-        port: 6379,
+        host: process.env.REDIS_HOST || 'redis',
+        port: parseInt(process.env.REDIS_PORT) || 6379,
       },
     }),
+
     EmailQueueModule,
   ],
   providers: [],
