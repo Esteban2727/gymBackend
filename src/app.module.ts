@@ -119,7 +119,7 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module';
     pruebaModule,
     BullModule.forRoot({
       connection: {
-        host: process.env.REDIS_HOST || 'redis',
+        host: process.env.REDIS_URL || 'redis',
         port: parseInt(process.env.REDIS_PORT) || 6379,
       },
     }),
