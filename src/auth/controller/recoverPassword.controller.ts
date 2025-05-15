@@ -11,7 +11,7 @@ import { LoginDto } from '../DTO/login.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 
 @Controller('recover-password')
-@ApiTags('Recover Password') // Define una categoría en Swagger
+@ApiTags('Recover Password') 
 export class RecoverPasswordController {
   constructor(
     private readonly recoverPasswordServices: RecoverPasswordServices,

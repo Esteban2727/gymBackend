@@ -40,6 +40,8 @@ import { exerciseModules } from './exercises/exercise.module';
 import { pruebaModule } from './pruebasArchivos/prueba.module';
 import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
 import { max } from 'class-validator';
+import { BullModule } from '@nestjs/bullmq';
+import { EmailQueueModule } from './emailQueue/email-Queue.module';
 
 @Module({
   imports: [
@@ -115,6 +117,13 @@ import { max } from 'class-validator';
     exerciseGroupMuscularModule,
     exerciseModules,
     pruebaModule,
+    BullModule.forRoot({
+      connection: {
+        host: 'host.docker.internal',
+        port: 6379,
+      },
+    }),
+    EmailQueueModule,
   ],
   providers: [],
 })

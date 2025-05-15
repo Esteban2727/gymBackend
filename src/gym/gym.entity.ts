@@ -25,7 +25,6 @@ export class Gym {
   @Column({ default: '#333' })
   secondary: string;
 
-
   @CreateDateColumn()
   createdAt: Date;
 

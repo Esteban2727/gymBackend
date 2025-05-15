@@ -4,12 +4,18 @@ import { Repository } from 'typeorm';
 import { Subscription } from '../Entity/subcription.entity';
 import { Cron } from '@nestjs/schedule';
 import { Customer } from 'src/customer/customer.entity';
+import { MailService } from 'src/mail/mail.service';
+import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bullmq';
+import { User } from 'src/auth/entity/user.entity';
 
 @Injectable()
 export class SubscriptionService {
   constructor(
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
+    private readonly mailServices: MailService,
+    @InjectQueue('email') private readonly emailQueue: Queue,
   ) {}
 
   async getUserSubscription(userId: string) {
@@ -21,7 +27,7 @@ export class SubscriptionService {
 
   async reset(userId: string) {
     const subscription = await this.getUserSubscription(userId);
-    if (!subscription) throw new Error('Suscripción no encontrada');
+    if (!subscription) throw new Error('Suscripción no encontrada11');
 
     subscription.remainingDays = 30;
     return await this.subscriptionRepository.save(subscription);
@@ -52,12 +58,46 @@ export class SubscriptionService {
   async checkSubscriptionAlertCron() {
     console.log('Revisando suscripciones con pocos días restantes...');
 
-    const subscriptions = await this.subscriptionRepository.find();
-    for (const sub of subscriptions) {
-      if (sub.remainingDays <= 5) {
-        console.log('pocos dias restantes');
+    const subcription = await this.subscriptionRepository
+      .createQueryBuilder('s')
+      .select([
+        'us.identification',
+        'us.username',
+        'us.email',
+        's.remainingDays',
+      ])
+      .innerJoin(User, 'us', 'us.identification =s.customerIdentification ')
+      .where('s.remainingDays < :value', { value: 6 })
+      .getRawMany();
+
+    console.log('Subs encontrados:', subcription);
+
+    for (const sub of subcription) {
+      console.log(
+        `Procesando suscripción de: ${sub.us_email}, días restantes: ${sub.s_remainingDays}`,
+      );
+
+      if (sub.s_remainingDays <= 5) {
+        const customerEmail = sub.us_email;
+        const subject = 'Recordatorio: Tu suscripción está por expirar';
+        const body = `Hola ${sub.us_username},<br><br>Tu suscripción está por expirar en ${sub.s_remainingDays} días.`;
+
+        try {
+          await this.emailQueue.add('send-email', {
+            to: customerEmail,
+            subject,
+            body,
+          });
+          console.log(`✅ Correo encolado a ${customerEmail}`);
+        } catch (error) {
+          console.error(`❌ Error encolando email a ${customerEmail}`, error);
+        }
       }
     }
+
+    return {
+      message: `Procesadas ${subcription.length} suscripciones por expirar.`,
+    };
   }
 
   async checkSubscriptionAlert() {

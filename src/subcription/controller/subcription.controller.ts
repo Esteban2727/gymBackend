@@ -11,6 +11,13 @@ import { SubscriptionService } from '../services/subcription.service';
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
+  @Get('entrar')
+  async testSubscriptionAlert() {
+    console.log('here');
+    await this.subscriptionService.checkSubscriptionAlertCron();
+    return 'Tarea de alerta de suscripción ejecutada!';
+  }
+
   @Get()
   async getCheckOfSubccription() {
     console.log('entro');
@@ -22,10 +29,11 @@ export class SubscriptionController {
 
   @Get(':userId')
   async getSubscription(@Param('userId') userId: string) {
+    console.log('entro');
     const subscription =
       await this.subscriptionService.getUserSubscription(userId);
     if (!subscription) {
-      throw new BadRequestException('Suscripción no encontrada');
+      throw new BadRequestException('Suscripción no encontrada22');
     }
     return subscription;
   }

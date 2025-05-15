@@ -263,7 +263,7 @@ export class gymServices {
       await this.dashboardService.emitFullDashboardUpdate();
       await this.sendMail.sendEmail(email, html, subject);
       await querybuilder.commitTransaction();
-      
+
       return assignUserToGym;
     } catch (error) {
       await querybuilder.rollbackTransaction();
@@ -359,7 +359,7 @@ export class gymServices {
     const verifyName = await this.gymRepository.findOne({
       where: { name: convert },
     });
-    console.log(verifyGym,11)
+    console.log(verifyGym, 11);
     if (verifyName) {
       return `el nombre del gimnasio ${name} ya existe`;
     }
