@@ -4,7 +4,6 @@ import {
   Param,
   Post,
   UseGuards,
-  Req,
   Body,
   Delete,
   Patch,
@@ -18,7 +17,7 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { registerDTO } from 'src/auth/DTO/register.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { updateDto } from '../update.dto';
-import { DashboardServices } from 'src/dashboard/services/dashboard.service';
+import { GymGuard } from 'src/guards/gym.guard';
 
 @Controller('customer')
 @ApiTags('Customer')
@@ -26,6 +25,8 @@ export class CustomerController {
   constructor(private readonly CustomerService: CustomerService) {}
 
   @Post('create')
+  @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard, GymGuard)
   async CreateCustomer(@Body() userdto: registerDTO) {
     const {
       cellphone,
@@ -49,8 +50,8 @@ export class CustomerController {
     return sendDataToService;
   }
   @Get(':id')
-  //@UseGuards(AuthGuard, RolesGuard)
-  //@Roles(rolEnum.customer)
+  @Roles(rolEnum.customer)
+  @UseGuards(AuthGuard, RolesGuard)
   @ApiOperation({
     summary: 'Get customer by ID',
     description: 'Retrieve customer details by their identification number.',
@@ -73,7 +74,8 @@ export class CustomerController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
+  @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard)
   @ApiOperation({
     summary: 'Get user session data',
     description: 'Retrieve session data of the authenticated user.',
@@ -94,6 +96,8 @@ export class CustomerController {
   }
 
   @Delete('delete/:id')
+  @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard)
   async deleteCustomer(@Param('id') id: string) {
     console.log(id);
     const deleteCustomer = await this.CustomerService.deleteCustomer(id);
@@ -103,6 +107,8 @@ export class CustomerController {
   }
 
   @Patch('updateData/:id')
+  @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard)
   async updateDataCustomer(
     @Param('id') id: string,
     @Body() updateDto: updateDto,
