@@ -13,16 +13,16 @@ import { SubscriptionService } from './services/subcription.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { MailModule } from 'src/mail/mail.module';
-import { EmailQueueModule } from 'src/emailQueue/email-Queue.module';
-import { BullModule } from '@nestjs/bullmq';
+/* import { EmailQueueModule } from 'src/emailQueue/email-Queue.module'; */
+/* import { BullModule } from '@nestjs/bullmq'; */
 
 @Module({
   imports: [
     ConfigModule, 
     PassportModule,
     MailModule,
-    EmailQueueModule,
-    BullModule.registerQueue({ name: 'email' }), 
+/*     EmailQueueModule, */
+  /*   BullModule.registerQueue({ name: 'email' }),  */
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

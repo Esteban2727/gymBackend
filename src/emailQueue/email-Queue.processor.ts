@@ -1,4 +1,4 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+/* import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { MailService } from '../mail/mail.service';
 
@@ -13,3 +13,4 @@ export class EmailQueueProcessor extends WorkerHost {
     await this.emailService.sendEmail(to, subject, body);
   }
 }
+ */

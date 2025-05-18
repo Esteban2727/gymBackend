@@ -5,8 +5,8 @@ import { Subscription } from '../Entity/subcription.entity';
 import { Cron } from '@nestjs/schedule';
 import { Customer } from 'src/customer/customer.entity';
 import { MailService } from 'src/mail/mail.service';
-import { Queue } from 'bullmq';
-import { InjectQueue } from '@nestjs/bullmq';
+/* import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bullmq'; */
 import { User } from 'src/auth/entity/user.entity';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class SubscriptionService {
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
     private readonly mailServices: MailService,
-    @InjectQueue('email') private readonly emailQueue: Queue,
+  /*   @InjectQueue('email') private readonly emailQueue: Queue, */
   ) {}
 
   async getUserSubscription(userId: string) {
@@ -54,7 +54,8 @@ export class SubscriptionService {
     console.log('Días restantes actualizados');
   }
 
-  @Cron('0 0 * * *')
+   @Cron('0 0 * * *') 
+ /*  @Cron('45 * * * * *') */
   async checkSubscriptionAlertCron() {
     console.log('Revisando suscripciones con pocos días restantes...');
 
@@ -83,14 +84,10 @@ export class SubscriptionService {
         const body = `Hola ${sub.us_username},<br><br>Tu suscripción está por expirar en ${sub.s_remainingDays} días.`;
 
         try {
-          await this.emailQueue.add('send-email', {
-            to: customerEmail,
-            subject,
-            body,
-          });
-          console.log(`✅ Correo encolado a ${customerEmail}`);
+          await this.mailServices.sendEmail(customerEmail, body, subject);
+          console.log(`Correo  a ${customerEmail}`);
         } catch (error) {
-          console.error(`❌ Error encolando email a ${customerEmail}`, error);
+          console.error(` Error encolando email a ${customerEmail}`, error);
         }
       }
     }
