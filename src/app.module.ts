@@ -39,9 +39,9 @@ import { administrator } from './gym/entity/userAdministrador.entity';
 import { exerciseModules } from './exercises/exercise.module';
 import { pruebaModule } from './pruebasArchivos/prueba.module';
 import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
-import { max } from 'class-validator';
+/* import { max } from 'class-validator';
 import { BullModule } from '@nestjs/bullmq';
-import { EmailQueueModule } from './emailQueue/email-Queue.module';
+import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
 
 @Module({
   imports: [
@@ -117,14 +117,14 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module';
     exerciseGroupMuscularModule,
     exerciseModules,
     pruebaModule,
-    BullModule.forRoot({
+/*     BullModule.forRoot({
       connection: {
-        host: process.env.REDIS_URL || 'redis',
+        url: process.env.REDIS_URL || 'redis',
         port: parseInt(process.env.REDIS_PORT) || 6379,
       },
-    }),
+    }), */
 
-    EmailQueueModule,
+  /*   EmailQueueModule, */
   ],
   providers: [],
 })
