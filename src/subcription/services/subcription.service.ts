@@ -15,7 +15,7 @@ export class SubscriptionService {
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
     private readonly mailServices: MailService,
-  /*   @InjectQueue('email') private readonly emailQueue: Queue, */
+    /*   @InjectQueue('email') private readonly emailQueue: Queue, */
   ) {}
 
   async getUserSubscription(userId: string) {
@@ -54,8 +54,8 @@ export class SubscriptionService {
     console.log('Días restantes actualizados');
   }
 
-   @Cron('0 0 * * *') 
- /*  @Cron('45 * * * * *') */
+  @Cron('0 0 * * *')
+  /*  @Cron('45 * * * * *') */
   async checkSubscriptionAlertCron() {
     console.log('Revisando suscripciones con pocos días restantes...');
 
@@ -99,7 +99,7 @@ export class SubscriptionService {
 
   async checkSubscriptionAlert() {
     console.log('dias restantes');
-    const arreglo = [];
+    // const arreglo = [];
     //const subscriptions = await this.subscriptionRepository.find();
     const subscription = await this.subscriptionRepository
       .createQueryBuilder()
