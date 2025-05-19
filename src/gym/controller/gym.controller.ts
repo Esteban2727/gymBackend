@@ -8,7 +8,6 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { GymDto } from '../DTO/gym.dto';
@@ -19,10 +18,8 @@ import { CreateGymDto } from '../DTO/createGym.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/uploadFiles/services/upload.service';
 import { changeInformationDto } from '../DTO/updateGtm.dto';
-import { AuthGuard } from 'src/guards/JwtAutentication.guard';
-import { RolesGuard } from 'src/guards/roles.guard';
-import { Roles } from 'src/decorator/roles.decorator';
-import { rolEnum } from 'src/enum/rol.enum';
+
+import { EditTrainerDto } from '../DTO/editTrainerDto';
 
 @Controller('gym')
 @ApiTags('Gym')
@@ -167,5 +164,13 @@ export class GymController {
     const { name } = changeInformationDto;
 
     return await this.gymServices.chamgeInformationGym(name, id);
+  }
+
+  @Patch('gymEditTrainer/:id')
+  async editTrainerFromGym(
+    @Param('id') id: string,
+    @Body() editTrainerDto: EditTrainerDto,
+  ) {
+    return await this.gymServices.editTrainer(editTrainerDto, id);
   }
 }

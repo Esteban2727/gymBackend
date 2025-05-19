@@ -205,4 +205,28 @@ export class UserService {
       };
     });
   }
+
+  async getAllUserByGym(id: string): Promise<any> {
+    const getAllUser = await this.userRepository
+      .createQueryBuilder('us')
+      .select([
+        'us.username as name',
+        'us.gender as gender',
+        'us.identification as identificacion',
+        'us.cellphone as celular',
+        'us.email as email',
+        'us.rol as rol',
+        'us.profilePicture as imagen',
+      ])
+      .leftJoin(GymUser, 'gs', 'gs.userIdentification = us.identification')
+      .leftJoin(Gym, 'gm', 'gm.id = gs.gymId')
+      .where('us.rol != :rol  and us.rol != :roles', {
+        rol: 'superadmin',
+        roles: 'administrador',
+      })
+      .andWhere('gm.id = :id', { id })
+      .getRawMany();
+
+    return getAllUser;
+  }
 }

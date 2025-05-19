@@ -32,4 +32,9 @@ export class UserController {
   async delete(@Param('id') id: string) {
     return await this.userService.softRemoveCustomerAndTrainer(id);
   }
+
+  @Get('userProfile/:id')
+  async getDataByUser(@Param('id') id: string) {
+    return await this.userService.getAllUserByGym(id);
+  }
 }

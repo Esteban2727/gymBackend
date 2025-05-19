@@ -117,14 +117,14 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
     exerciseGroupMuscularModule,
     exerciseModules,
     pruebaModule,
-/*     BullModule.forRoot({
+    /*     BullModule.forRoot({
       connection: {
         url: process.env.REDIS_URL || 'redis',
         port: parseInt(process.env.REDIS_PORT) || 6379,
       },
     }), */
 
-  /*   EmailQueueModule, */
+    /*   EmailQueueModule, */
   ],
   providers: [],
 })

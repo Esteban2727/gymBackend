@@ -11,6 +11,7 @@ import { User } from 'src/auth/entity/user.entity';
 import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 import { Customer } from 'src/customer/customer.entity';
 import { error } from 'console';
+import { EditTrainerDto } from '../DTO/editTrainerDto';
 
 @Injectable()
 export class gymServices {
@@ -372,5 +373,31 @@ export class gymServices {
       .where('id = :id', { id })
       .execute();
     return 'Cambios realizados';
+  }
+
+  async editTrainer(
+    editTrainerDto: EditTrainerDto,
+    id: string,
+  ): Promise<{ message: string }> {
+    console.log(editTrainerDto,2)
+    const { cellphone, email, username } = editTrainerDto;
+
+    const verifyEmail = await this.userRepository.findOne({
+      where: { email: email },
+    });
+    if (verifyEmail) {
+      return { message: 'ese email ya existe' };
+    }
+    await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({
+        cellphone: cellphone,
+        email: email,
+        username: username,
+      })
+      .where('identification = :id', { id })
+      .execute();
+    return { message: 'editado' };
   }
 }
