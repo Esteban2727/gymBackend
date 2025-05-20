@@ -148,7 +148,6 @@ export class UserService {
 
   async softRemoveCustomerAndTrainer(id: string) {
     return await this.dataSource.transaction(async (manager) => {
-      // Buscar usuario con relaciones
       const user = await manager.getRepository(User).findOne({
         where: { identification: id },
       });
