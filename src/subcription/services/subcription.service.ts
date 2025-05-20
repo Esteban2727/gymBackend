@@ -57,8 +57,8 @@ export class SubscriptionService {
     console.log('Días restantes actualizados');
   }
 
-  /* @Cron('0 0 * * *') */
-  @Cron('20 * * * * *')
+  @Cron('0 0 * * *')
+  // @Cron('20 * * * * *')
   async checkSubscriptionAlertCron() {
     console.log('🔔 Revisando suscripciones con pocos días restantes...');
 
@@ -106,7 +106,6 @@ export class SubscriptionService {
         </div>
       `;
 
-     
         try {
           await this.userServices.softRemoveCustomerAndTrainer(identification);
           console.log(
@@ -116,9 +115,8 @@ export class SubscriptionService {
           console.error(`❌ Error eliminando lógicamente a ${username}:`, err);
         }
       } else {
-        continue; 
+        continue;
       }
-
 
       try {
         await this.mailServices.sendEmail(customerEmail, body, subject);
@@ -127,7 +125,6 @@ export class SubscriptionService {
         console.error(`❌ Error enviando correo a ${customerEmail}:`, error);
       }
 
-      
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
