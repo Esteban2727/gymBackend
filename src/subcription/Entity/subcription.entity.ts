@@ -6,7 +6,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { User } from '../../auth/entity/user.entity';
 import { Customer } from 'src/customer/customer.entity';
 
 @Entity('user_subscriptions')

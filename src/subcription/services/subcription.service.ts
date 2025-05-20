@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { And, Repository } from 'typeorm';
 import { Subscription } from '../Entity/subcription.entity';
 import { Cron } from '@nestjs/schedule';
 import { Customer } from 'src/customer/customer.entity';
@@ -8,6 +8,7 @@ import { MailService } from 'src/mail/mail.service';
 /* import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq'; */
 import { User } from 'src/auth/entity/user.entity';
+import { UserService } from 'src/user/services/user.service';
 
 @Injectable()
 export class SubscriptionService {
@@ -15,6 +16,7 @@ export class SubscriptionService {
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
     private readonly mailServices: MailService,
+    private readonly userServices: UserService,
     /*   @InjectQueue('email') private readonly emailQueue: Queue, */
   ) {}
 
@@ -38,7 +40,8 @@ export class SubscriptionService {
     return { isActive: subscription?.remainingDays > 0 };
   }
 
-  @Cron('0 0 * * *')
+  /* @Cron('0 0 * * *') */
+  @Cron('20 * * * * *')
   async decreaseRemainingDays() {
     console.log('Disminuyendo días restantes de suscripciones...');
 
@@ -55,11 +58,11 @@ export class SubscriptionService {
   }
 
   @Cron('0 0 * * *')
-  /*  @Cron('45 * * * * *') */
+  // @Cron('20 * * * * *')
   async checkSubscriptionAlertCron() {
-    console.log('Revisando suscripciones con pocos días restantes...');
+    console.log('🔔 Revisando suscripciones con pocos días restantes...');
 
-    const subcription = await this.subscriptionRepository
+    const subcriptions = await this.subscriptionRepository
       .createQueryBuilder('s')
       .select([
         'us.identification',
@@ -67,33 +70,66 @@ export class SubscriptionService {
         'us.email',
         's.remainingDays',
       ])
-      .innerJoin(User, 'us', 'us.identification =s.customerIdentification ')
+      .innerJoin(User, 'us', 'us.identification = s.customerIdentification')
       .where('s.remainingDays < :value', { value: 6 })
       .getRawMany();
 
-    console.log('Subs encontrados:', subcription);
+    console.log(`📦 Subscripciones encontradas: ${subcriptions.length}`);
 
-    for (const sub of subcription) {
-      console.log(
-        `Procesando suscripción de: ${sub.us_email}, días restantes: ${sub.s_remainingDays}`,
-      );
+    for (const sub of subcriptions) {
+      const customerEmail = sub.us_email;
+      const remainingDays = sub.s_remainingDays;
+      const username = sub.us_username;
+      const identification = sub.us_identification;
 
-      if (sub.s_remainingDays <= 5) {
-        const customerEmail = sub.us_email;
-        const subject = 'Recordatorio: Tu suscripción está por expirar';
-        const body = `Hola ${sub.us_username},<br><br>Tu suscripción está por expirar en ${sub.s_remainingDays} días.`;
+      let subject = '';
+      let body = '';
+
+      if (remainingDays > 0) {
+        subject = '🏋️ ¡Tu suscripción está por expirar!';
+        body = `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+          <h2 style="color: #e60000;">¡Hola ${username}!</h2>
+          <p>Tu suscripción al gimnasio <strong>expira en ${remainingDays} día(s)</strong>.</p>
+          <p>¡No pierdas tu progreso! Renueva tu plan y sigue entrenando con nosotros 💪</p>
+          <a href="https://tu-gimnasio.com/renovar" style="padding: 10px 20px; background-color: #e60000; color: white; text-decoration: none; border-radius: 5px;">Renovar Ahora</a>
+        </div>
+      `;
+      } else if (remainingDays === 0) {
+        subject = '❌ Tu suscripción ha vencido';
+        body = `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+          <h2 style="color: #e60000;">Hola ${username},</h2>
+          <p>Lamentablemente, tu suscripción al gimnasio ha <strong>vencido</strong>.</p>
+          <p>Pero no te preocupes, aún puedes renovarla y retomar tus entrenamientos.</p>
+          <a href="https://tu-gimnasio.com/renovar" style="padding: 10px 20px; background-color: #e60000; color: white; text-decoration: none; border-radius: 5px;">Renovar Suscripción</a>
+        </div>
+      `;
 
         try {
-          await this.mailServices.sendEmail(customerEmail, body, subject);
-          console.log(`Correo  a ${customerEmail}`);
-        } catch (error) {
-          console.error(` Error encolando email a ${customerEmail}`, error);
+          await this.userServices.softRemoveCustomerAndTrainer(identification);
+          console.log(
+            `✅ Usuario ${username} marcado como eliminado (soft delete)`,
+          );
+        } catch (err) {
+          console.error(`❌ Error eliminando lógicamente a ${username}:`, err);
         }
+      } else {
+        continue;
       }
+
+      try {
+        await this.mailServices.sendEmail(customerEmail, body, subject);
+        console.log(`📧 Correo enviado a ${customerEmail}`);
+      } catch (error) {
+        console.error(`❌ Error enviando correo a ${customerEmail}:`, error);
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     return {
-      message: `Procesadas ${subcription.length} suscripciones por expirar.`,
+      message: `✅ Procesadas ${subcriptions.length} suscripciones.`,
     };
   }
 

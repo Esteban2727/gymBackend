@@ -6,7 +6,7 @@ import { UserController } from './controller/user.controller';
 import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { RoutineTrainer } from 'src/rutine/routineTrainer';
-import { Subscription } from 'rxjs';
+import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 @Module({
   imports: [
@@ -20,6 +20,6 @@ import { Subscription } from 'rxjs';
   ],
   providers: [UserService],
   controllers: [UserController],
-  exports: [UserService, TypeOrmModule], // Para usarlo en otros módulos
+  exports: [UserService, TypeOrmModule], 
 })
 export class UserModule {}

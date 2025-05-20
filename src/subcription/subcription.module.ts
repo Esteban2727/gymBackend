@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -10,6 +10,7 @@ import { SubscriptionService } from './services/subcription.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { MailModule } from 'src/mail/mail.module';
+import { UserModule } from 'src/user/user.module';
 /* import { EmailQueueModule } from 'src/emailQueue/email-Queue.module'; */
 /* import { BullModule } from '@nestjs/bullmq'; */
 
@@ -18,6 +19,7 @@ import { MailModule } from 'src/mail/mail.module';
     ConfigModule,
     PassportModule,
     MailModule,
+    forwardRef(() => UserModule),
     /*     EmailQueueModule, */
     /*   BullModule.registerQueue({ name: 'email' }),  */
     JwtModule.registerAsync({

@@ -336,6 +336,7 @@ export class gymServices {
         'cm.profilePicture ',
         'cm.createdAt',
         'cm.deletedAt',
+        'cm.rol',
       ])
       .withDeleted()
       .leftJoin(GymUser, 'gu', 'gu.gymId = gym.id')
@@ -379,7 +380,7 @@ export class gymServices {
     editTrainerDto: EditTrainerDto,
     id: string,
   ): Promise<{ message: string }> {
-    console.log(editTrainerDto,2)
+    console.log(editTrainerDto, 2);
     const { cellphone, email, username } = editTrainerDto;
 
     const verifyEmail = await this.userRepository.findOne({
