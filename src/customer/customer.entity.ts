@@ -2,23 +2,27 @@ import { ChildEntity, Column, OneToMany } from 'typeorm';
 import { User } from '../auth/entity/user.entity';
 import { Subscription } from '../subcription/Entity/subcription.entity';
 import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
+import { UserMeasurement } from 'src/userMeasurment/user-measurment.entity';
 
 @ChildEntity()
 export class Customer extends User {
   constructor() {
     super();
-    this.rol = 'customer'; 
+    this.rol = 'customer';
   }
 
   @Column({ type: 'date', nullable: true })
   membershipStartDate: Date;
 
   @Column({ default: 'Basic' })
-  membershipType: string; 
+  membershipType: string;
 
   @OneToMany(() => Subscription, (subscription) => subscription.customer)
   subscriptions: Subscription[];
 
-  @OneToMany(() => TrainerCustomer, tc => tc.customer)
+  @OneToMany(() => TrainerCustomer, (tc) => tc.customer)
   trainers: TrainerCustomer[];
+
+  @OneToMany(() => UserMeasurement, (m) => m.customer, { cascade: true })
+  measurements: UserMeasurement[];
 }

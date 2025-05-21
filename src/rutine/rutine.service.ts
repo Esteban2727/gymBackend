@@ -6,6 +6,15 @@ import { UpdateRoutineDto } from './DTO/update-routine.dto';
 import { RoutineTrainer } from './routineTrainer';
 import { Trainer } from 'src/Trainer/trainer.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
+import { RoutineExercise } from './routineExcersise.entity';
+import { Exercise } from 'src/exercises/Entity/exercise.entity';
+import { ExerciseTrainingType } from 'src/exercise-trainingType/Entity/exercise-trainingType.entity';
+import { TrainingType } from 'src/trainingType/entity/trainingType.entity';
+import { ExerciseMuscleGroup } from 'src/exerciseGroupMuscular/exerciseGroupMuscular.entity';
+import { MuscleGroup } from 'src/groupMuscle/Entity/muscleGroup.entity';
+import { RoutineDto } from './DTO/routine.dto';
+import { RoutineCreateDto } from './RoutineCreateDto';
+import { ExerciseGroupService } from 'src/exercises/services/exercise.service';
 
 @Injectable()
 export class RoutineService {
@@ -154,5 +163,164 @@ export class RoutineService {
       .getRawMany();
 
     return verifyIdTrainer;
+  }
+
+  async getAllRoutine(
+    trainingTypeName?: string,
+    muscleGroupName?: string,
+    difficultyLevel?: string,
+  ) {
+    const query = this.routineRepository
+      .createQueryBuilder('routine')
+      .innerJoin(RoutineExercise, 're', 're.routineId = routine.id')
+      .innerJoin(Exercise, 'exercise', 'exercise.id = re.exerciseId')
+      .innerJoin(ExerciseTrainingType, 'et', 'et.exercise_id = exercise.id')
+      .innerJoin(TrainingType, 'type', 'type.id = et.training_type_id')
+      .innerJoin(ExerciseMuscleGroup, 'emg', 'emg.exerciseId = exercise.id')
+      .innerJoin(MuscleGroup, 'mg', 'mg.id = emg.muscleGroupId')
+      .select([
+        'routine.id AS routineId',
+        'routine.name AS routineName',
+        'type.name AS trainingTypeName',
+        'type.description AS trainingTypeDescription',
+        'exercise.name AS exerciseName',
+        'exercise.description AS exerciseDescription',
+        'exercise.equipment AS exerciseEquipment',
+        'exercise.difficulty_level AS difficultyLevel',
+        'mg.name AS muscleGroup',
+      ]);
+
+    if (trainingTypeName) {
+      query.andWhere('type.name = :trainingTypeName', { trainingTypeName });
+    }
+
+    if (muscleGroupName) {
+      query.andWhere('mg.name = :muscleGroupName', { muscleGroupName });
+    }
+
+    if (difficultyLevel) {
+      query.andWhere('exercise.difficulty_level = :difficultyLevel', {
+        difficultyLevel,
+      });
+    }
+
+    return await query.getRawMany();
+  }
+
+  async createRoutine(routineDto: RoutineCreateDto) {
+    const {
+      name,
+      description,
+      order,
+      repetitions,
+      rest_time,
+      equipment,
+      dificultad,
+      descriptionExercise,
+      nameExercise,
+      tipo,
+      muscleGroup,
+    } = routineDto;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Crear rutina
+      const insertRoutine = await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(Routine)
+        .values({
+          name,
+          description,
+          is_active: true,
+        })
+        .returning('id')
+        .execute();
+
+      const routineId = insertRoutine.raw[0].id;
+
+      // Crear ejercicio
+      const insertExercise = await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(Exercise)
+        .values({
+          name: nameExercise,
+          description: descriptionExercise,
+          equipment,
+          difficulty_level: dificultad,
+          is_active: true,
+        })
+        .returning('id')
+        .execute();
+
+      const exerciseId = insertExercise.raw[0].id;
+
+      // Asociar ejercicio con rutina
+      await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(RoutineExercise)
+        .values({
+          routine: { id: routineId },
+          exercise: { id: exerciseId },
+          order,
+          repetitions,
+          rest_time,
+        })
+        .execute();
+
+      // Buscar tipo de entrenamiento
+      const training = await queryRunner.manager
+        .getRepository(TrainingType)
+        .createQueryBuilder('tr')
+        .where('tr.name = :type', { type: tipo })
+        .getOne();
+
+      if (!training) throw new Error('Tipo de entrenamiento no encontrado');
+
+      // Asociar tipo de entrenamiento con ejercicio
+      await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(ExerciseTrainingType)
+        .values({
+          trainingType: { id: training.id },
+          exercise: { id: exerciseId },
+        })
+        .execute();
+
+      // Buscar grupo muscular
+      const mg = await queryRunner.manager
+        .getRepository(MuscleGroup)
+        .createQueryBuilder('mg')
+        .where('mg.name = :name', { name: muscleGroup })
+        .getOne();
+
+      if (!mg) throw new Error('Grupo muscular no encontrado');
+
+      // Asociar grupo muscular con ejercicio
+      await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(ExerciseMuscleGroup)
+        .values({
+          exercise: { id: exerciseId },
+          muscleGroup: { id: mg.id },
+        })
+        .execute();
+
+      await queryRunner.commitTransaction();
+      return { message: 'Rutina creada exitosamente', id: routineId };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error('Error creando rutina:', error);
+      throw new Error('No se pudo crear la rutina');
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

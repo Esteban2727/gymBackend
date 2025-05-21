@@ -384,7 +384,7 @@ export class gymServices {
     const { cellphone, email, username } = editTrainerDto;
 
     const verifyEmail = await this.userRepository.findOne({
-      where: { email: email },
+      where: { email: email, identification: Not(id) },
     });
     if (verifyEmail) {
       return { message: 'ese email ya existe' };

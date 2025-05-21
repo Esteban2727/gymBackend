@@ -40,8 +40,8 @@ export class SubscriptionService {
     return { isActive: subscription?.remainingDays > 0 };
   }
 
-  /* @Cron('0 0 * * *') */
-  @Cron('20 * * * * *')
+   @Cron('0 0 * * *') 
+/*   @Cron('20 * * * * *') */
   async decreaseRemainingDays() {
     console.log('Disminuyendo días restantes de suscripciones...');
 

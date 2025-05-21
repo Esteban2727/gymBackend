@@ -11,6 +11,7 @@ import {
 import { RoutineService } from './rutine.service';
 import { RoutineDto } from './DTO/routine.dto';
 import { UpdateRoutineDto } from './DTO/update-routine.dto';
+import { RoutineCreateDto } from './RoutineCreateDto';
 
 @Controller('routine')
 export class RoutineController {
@@ -60,5 +61,15 @@ export class RoutineController {
   @Get('routineTrainerById/:id')
   async getRoutineById(@Param('id') id: string) {
     return await this.routineService.getTrainerWithRoutine(id);
+  }
+
+  @Get('getAllRoutine/')
+  async getAllRoutine() {
+    return await this.routineService.getAllRoutine();
+  }
+
+  @Post('createRutuine')
+  async createRutine(@Body() rutineDto: RoutineCreateDto) {
+    await this.routineService.createRoutine(rutineDto);
   }
 }

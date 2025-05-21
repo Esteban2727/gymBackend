@@ -10,6 +10,9 @@ export class ExerciseMuscleGroup {
   @ManyToOne(() => Exercise, (exercise) => exercise.exerciseMuscleGroups)
   exercise: Exercise;
 
-  @ManyToOne(() => MuscleGroup, (muscleGroup) => muscleGroup.exerciseMuscleGroups)
+  @ManyToOne(
+    () => MuscleGroup,
+    (muscleGroup) => muscleGroup.exerciseMuscleGroups,
+  )
   muscleGroup: MuscleGroup;
 }
