@@ -39,6 +39,8 @@ import { administrator } from './gym/entity/userAdministrador.entity';
 import { exerciseModules } from './exercises/exercise.module';
 import { pruebaModule } from './pruebasArchivos/prueba.module';
 import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
+import { UserMeasurement } from './userMeasurment/user-measurment.entity';
+import { UserMeasurmentModule } from './userMeasurment/user-measurment.module';
 /* import { max } from 'class-validator';
 import { BullModule } from '@nestjs/bullmq';
 import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
@@ -101,6 +103,7 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
       RoutineTrainer,
       administrator,
       TrainerCustomer,
+      UserMeasurement,
     ]),
     AuthModule,
     CustomerModule,
@@ -117,6 +120,7 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
     exerciseGroupMuscularModule,
     exerciseModules,
     pruebaModule,
+    UserMeasurmentModule,
     /*     BullModule.forRoot({
       connection: {
         url: process.env.REDIS_URL || 'redis',
