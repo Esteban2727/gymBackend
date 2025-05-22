@@ -116,4 +116,14 @@ export class CustomerController {
     const { cel, username } = updateDto;
     return await this.CustomerService.updateData(id, cel, username);
   }
+
+  @Post('assignRoutine/:routineId/:customerId/:trainerId')
+  async assignRoutineToCustomer(@Param() id: string[]) {
+    return await this.CustomerService.assignRoutine(id);
+  }
+
+  @Get('rutineAssigned/:id')
+  async getRoutineAssigned(@Param('id') id: string) {
+    return await this.CustomerService.getAssignedToCustomer(id);
+  }
 }

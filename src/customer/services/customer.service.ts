@@ -8,6 +8,8 @@ import { GymUser } from 'src/gym/gymUser.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Gym } from 'src/gym/gym.entity';
 import { DashboardServices } from 'src/dashboard/services/dashboard.service';
+import { Routine } from 'src/rutine/rutine.entity';
+import { RoutineAssignment } from '../assignCustomerRutine.entity';
 
 export class CustomerService {
   constructor(
@@ -23,6 +25,11 @@ export class CustomerService {
     @InjectRepository(Gym)
     readonly GymRepository: Repository<Gym>,
     private readonly dashboardService: DashboardServices,
+
+    @InjectRepository(Routine)
+    readonly routineRepository: Repository<Routine>,
+    @InjectRepository(RoutineAssignment)
+    readonly assignRoutineRepository: Repository<RoutineAssignment>,
   ) {}
   async GetCustomerById(ident: string) {
     const bringDatas = await this.userReposotory.find({
@@ -113,7 +120,7 @@ export class CustomerService {
   </div>
 `;
     await this.dashboardService.emitFullDashboardUpdate();
-    
+
     await this.sendMail.sendEmail(email, html, subject);
     return 'created succefully';
   }
@@ -168,5 +175,44 @@ export class CustomerService {
       .where('identification = :id', { id })
       .execute();
     return 'actualizado';
+  }
+
+  async assignRoutine(id: any) {
+    const { routineId, customerId, trainerId } = id;
+    const verifyRoutine = await this.routineRepository.findOne({
+      where: { id: routineId },
+    });
+    if (!verifyRoutine) {
+      throw new Error('no se encuentra esa rutina');
+    }
+    const verifyCustomer = await this.customerRepository.findOne({
+      where: { identification: customerId },
+    });
+    if (!verifyCustomer) {
+      throw new Error('no se encontro el customer');
+    }
+
+    await this.assignRoutineRepository
+      .createQueryBuilder()
+      .insert()
+      .into(RoutineAssignment)
+      .values({
+        customer: { identification: customerId },
+        routine: { id: routineId },
+        trainer: { identification: trainerId },
+      })
+      .execute();
+  }
+
+  async getAssignedToCustomer(id: string) {
+    const verifyExistingCustomer = await this.customerRepository.findOne({
+      where: { identification: id },
+    });
+    if (!verifyExistingCustomer) {
+      throw new Error('no existe ese cliente');
+    }
+    return await this.assignRoutineRepository.find({
+      where: { customer: { identification: id } },
+    });
   }
 }

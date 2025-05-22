@@ -14,6 +14,8 @@ import { GymUser } from 'src/gym/gymUser.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailService } from 'src/mail/mail.service';
 import { DashboardModule } from 'src/dashboard/dashboard.module';
+import { RoutineAssignment } from './assignCustomerRutine.entity';
+import { Routine } from 'src/rutine/rutine.entity';
 
 @Module({
   imports: [
@@ -30,9 +32,17 @@ import { DashboardModule } from 'src/dashboard/dashboard.module';
         },
       }),
     }),
-    TypeOrmModule.forFeature([User, Subscription, Customer, GymUser, Gym]),
+    TypeOrmModule.forFeature([
+      User,
+      Subscription,
+      Customer,
+      GymUser,
+      Gym,
+      RoutineAssignment,
+      Routine
+    ]),
   ],
   controllers: [CustomerController],
-  providers: [CustomerService,MailService],
+  providers: [CustomerService, MailService],
 })
 export class CustomerModule {}

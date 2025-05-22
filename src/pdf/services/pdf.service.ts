@@ -1,7 +1,16 @@
+import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import * as puppeteer from 'puppeteer';
+import { User } from 'src/auth/entity/user.entity';
+import { Gym } from 'src/gym/gym.entity';
+import { GymUser } from 'src/gym/gymUser.entity';
+import { Repository } from 'typeorm';
 
 export class GeneratePdfServices {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
   async createPdf(title: string, data: any, res: Response) {
     try {
       const formattedTitle = title.split('-').join(' ');
@@ -43,18 +52,6 @@ export class GeneratePdfServices {
     const genderMale1 = parseFloat(genderMale.replace('%', ''));
 
     const genderFemale = 100 - genderMale1;
-
-    console.log(genderFemale, 1111, genderMale, 222);
-
-    const activeGymsPercentage =
-      gyms.active !== undefined && gyms.total !== undefined
-        ? ((gyms.active / gyms.total) * 100).toFixed(2)
-        : 'N/A';
-
-    const inactiveGymsPercentage =
-      gyms.inactive !== undefined && gyms.total !== undefined
-        ? ((gyms.inactive / gyms.total) * 100).toFixed(2)
-        : 'N/A';
 
     return `
       <!DOCTYPE html>
@@ -164,5 +161,137 @@ export class GeneratePdfServices {
       </body>
       </html>
     `;
+  }
+
+  private generateUserTableHtml(title: string, users: any[]): string {
+    const fecha = new Date().toLocaleString();
+
+    const rows = users
+      .map(
+        (u, index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${u.u_username}</td>
+        <td>${u.u_email}</td>
+        <td>${new Date(u.u_createdAt).toLocaleDateString()}</td>
+        <td>${u.u_membershipType}</td>
+      </tr>`,
+      )
+      .join('');
+
+    return `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>${title}</title>
+      <style>
+        body {
+          font-family: 'Arial', sans-serif;
+          padding: 20px;
+          color: #333;
+          background-color: #fff;
+        }
+        h1 {
+          text-align: center;
+          color: #2c3e50;
+        }
+        .intro {
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 18px;
+          color: #7f8c8d;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+        th, td {
+          border: 1px solid #ccc;
+          padding: 8px 12px;
+          text-align: left;
+        }
+        th {
+          background-color: #3498db;
+          color: white;
+        }
+        tr:nth-child(even) {
+          background-color: #f2f2f2;
+        }
+        .footer {
+          margin-top: 40px;
+          text-align: center;
+          font-size: 12px;
+          color: #888;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <p class="intro">Lista de usuarios activos registrados en este gimnasio.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre de Usuario</th>
+            <th>Email</th>
+            <th>Fecha de Registro</th>
+            <th>Tipo de Membresía</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+      <div class="footer">Generado el ${fecha}</div>
+    </body>
+    </html>
+  `;
+  }
+
+  async createPdfFromGymUsers(gymId: string, res: Response) {
+    try {
+      const users = await this.GetCustomerByGym(gymId);
+
+      const formattedTitle = 'Usuarios activos del gimnasio';
+      const html = this.generateUserTableHtml(formattedTitle, users);
+
+      const browser = await puppeteer.launch({ headless: true });
+      const page = await browser.newPage();
+
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '1.5cm',
+          bottom: '1.5cm',
+          left: '1cm',
+          right: '1cm',
+        },
+      });
+
+      await browser.close();
+
+      const filename = `usuarios-gym-${Date.now()}.pdf`;
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.end(pdfBuffer);
+    } catch (error) {
+      console.error('Error al generar el PDF de usuarios del gimnasio:', error);
+      throw new Error('Error al generar el PDF');
+    }
+  }
+
+  async GetCustomerByGym(id: string) {
+    return await this.userRepository
+      .createQueryBuilder('u')
+      .select(['u.username', 'u.email', 'u.createdAt', 'u.membershipType'])
+      .innerJoin(GymUser, 'gs', 'gs.userIdentification = u.identification ')
+      .innerJoin(Gym, 'g', 'g.id = gs.gymId')
+      .where('u.rol = :value1 and g.id = :id', { value1: 'customer', id: id })
+      .getRawMany();
   }
 }

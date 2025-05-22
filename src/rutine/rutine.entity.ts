@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn } from "typeorm";
-import { RoutineTrainer } from "./routineTrainer";
-import { RoutineExercise } from "./routineExcersise.entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  DeleteDateColumn,
+} from 'typeorm';
+import { RoutineTrainer } from './routineTrainer';
+import { RoutineExercise } from './routineExcersise.entity';
 
 @Entity()
 export class Routine {
@@ -19,10 +25,12 @@ export class Routine {
   @OneToMany(() => RoutineTrainer, (routineTrainer) => routineTrainer.routine)
   routineTrainers: RoutineTrainer[];
 
-  @OneToMany(() => RoutineExercise, (routineExercise) => routineExercise.routine)
+  @OneToMany(
+    () => RoutineExercise,
+    (routineExercise) => routineExercise.routine,
+  )
   routineExercises: RoutineExercise[];
 
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date; // Para que funcione soft delete
-
 }

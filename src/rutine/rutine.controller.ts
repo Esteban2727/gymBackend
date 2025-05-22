@@ -63,9 +63,13 @@ export class RoutineController {
     return await this.routineService.getTrainerWithRoutine(id);
   }
 
-  @Get('getAllRoutine/')
-  async getAllRoutine() {
-    return await this.routineService.getAllRoutine();
+  @Get('getAllRoutine')
+  async getAllRoutine(
+    @Query('type') type: string,
+    @Query('muscle') muscle: string,
+    @Query('level') level: string,
+  ) {
+    return await this.routineService.getAllRoutine(type, muscle, level);
   }
 
   @Post('createRutuine')
