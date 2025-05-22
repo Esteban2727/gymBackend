@@ -41,6 +41,7 @@ import { pruebaModule } from './pruebasArchivos/prueba.module';
 import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
 import { UserMeasurement } from './userMeasurment/user-measurment.entity';
 import { UserMeasurmentModule } from './userMeasurment/user-measurment.module';
+import { RoutineAssignment } from './customer/assignCustomerRutine.entity';
 /* import { max } from 'class-validator';
 import { BullModule } from '@nestjs/bullmq';
 import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
@@ -104,6 +105,7 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
       administrator,
       TrainerCustomer,
       UserMeasurement,
+      RoutineAssignment,
     ]),
     AuthModule,
     CustomerModule,

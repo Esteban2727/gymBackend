@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, Param, Get } from '@nestjs/common';
 import { Response } from 'express';
 import { GeneratePdfServices } from '../services/pdf.service';
 import { DashboardServices } from '../../dashboard/services/dashboard.service';
@@ -12,10 +12,13 @@ export class GeneratePdfController {
 
   @Post()
   async generatePdf(@Body('title') title: string, @Res() res: Response) {
-    // ✅ Obtenemos el payload con todos los datos del dashboard
     const payload = await this.dashboardService.emitFullDashboardUpdate();
 
-    // ✅ Generamos el PDF usando el título y los datos
     return this.generatePdfServices.createPdf(title, payload, res);
+  }
+
+  @Get('dataPdf/:id')
+  async getDataPdf(@Param('id') id: string, @Res() res: Response) {
+    return this.generatePdfServices.createPdfFromGymUsers(id, res);
   }
 }

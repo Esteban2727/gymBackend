@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  DeleteDateColumn,
+} from 'typeorm';
 import { Routine } from './rutine.entity';
 import { Trainer } from '../Trainer/trainer.entity';
 
