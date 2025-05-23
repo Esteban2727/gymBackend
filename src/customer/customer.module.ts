@@ -16,6 +16,7 @@ import { MailService } from 'src/mail/mail.service';
 import { DashboardModule } from 'src/dashboard/dashboard.module';
 import { RoutineAssignment } from './assignCustomerRutine.entity';
 import { Routine } from 'src/rutine/rutine.entity';
+import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { Routine } from 'src/rutine/rutine.entity';
       GymUser,
       Gym,
       RoutineAssignment,
-      Routine
+      Routine,
+      TrainerCustomer
     ]),
   ],
   controllers: [CustomerController],
