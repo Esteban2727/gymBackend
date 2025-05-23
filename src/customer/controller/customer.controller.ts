@@ -126,4 +126,9 @@ export class CustomerController {
   async getRoutineAssigned(@Param('id') id: string) {
     return await this.CustomerService.getAssignedToCustomer(id);
   }
+
+  @Get('CloseFriends/:id')
+  async getCloseFriends(@Param('id') id: string) {
+    return await this.CustomerService.getCloseFriends(id);
+  }
 }

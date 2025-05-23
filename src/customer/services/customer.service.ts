@@ -10,6 +10,8 @@ import { Gym } from 'src/gym/gym.entity';
 import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 import { Routine } from 'src/rutine/rutine.entity';
 import { RoutineAssignment } from '../assignCustomerRutine.entity';
+import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
+import { NotFoundException } from '@nestjs/common';
 
 export class CustomerService {
   constructor(
@@ -30,6 +32,8 @@ export class CustomerService {
     readonly routineRepository: Repository<Routine>,
     @InjectRepository(RoutineAssignment)
     readonly assignRoutineRepository: Repository<RoutineAssignment>,
+    @InjectRepository(TrainerCustomer)
+    readonly trainerCustomerRepository: Repository<TrainerCustomer>,
   ) {}
   async GetCustomerById(ident: string) {
     const bringDatas = await this.userReposotory.find({
@@ -214,5 +218,40 @@ export class CustomerService {
     return await this.assignRoutineRepository.find({
       where: { customer: { identification: id } },
     });
+  }
+
+  async getCloseFriends(userId: string) {
+    const customer = await this.userReposotory.findOne({
+      where: { identification: userId },
+    });
+    console.log('paso', customer);
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const relation = await this.trainerCustomerRepository.findOne({
+      where: { customer: { identification: customer.identification } },
+       relations: ['trainer', 'customer'],
+    });
+    console.log('relation', relation);
+    if (!relation) {
+      throw new NotFoundException('Trainer relation not found');
+    }
+
+    const trainerId = relation.trainer.identification;
+    console.log(trainerId, 'rrrrr');
+    const closeFriends = await this.customerRepository
+      .createQueryBuilder('cm')
+      .select(['cm.username', 'cm.profilePicture'])
+      .innerJoin(
+        TrainerCustomer,
+        'tc',
+        'tc.customerIdentification = cm.identification',
+      )
+      .where('tc.trainerIdentification = :trainerId', { trainerId })
+      .andWhere('cm.rol = :rol', { rol: 'customer' })
+      .getMany();
+
+    return closeFriends;
   }
 }
