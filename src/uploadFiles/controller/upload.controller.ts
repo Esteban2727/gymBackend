@@ -20,7 +20,7 @@ export class UploadController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.memoryStorage(),
-     
+
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/^image\/(jpeg|png|gif|webp)$/)) {
           return cb(new BadRequestException('Formato inválido'), false);

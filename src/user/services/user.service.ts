@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Not, Repository } from 'typeorm';
 import { User } from '../../auth/entity/user.entity';
@@ -74,15 +78,27 @@ export class UserService {
   }
 
   async updateProfilePicture(userId: string, imageUrl: string) {
-    const user = await this.userRepository.findOne({
-      where: { identification: userId },
-    });
-    if (!user) {
-      throw new Error(' Usuario no encontrado');
+    try {
+      const user = await this.userRepository.findOne({
+        where: { identification: userId },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
+      }
+
+      if (!imageUrl || imageUrl.trim() === '') {
+        throw new InternalServerErrorException('URL de imagen inválida');
+      }
+
+      user.profilePicture = imageUrl;
+
+      const updatedUser = await this.userRepository.save(user);
+
+      return updatedUser;
+    } catch (error) {
+      throw error;
     }
-    user.profilePicture = imageUrl;
-    await this.userRepository.save(user);
-    return user;
   }
   async activateCustomerAndTrainer(id: string) {
     return await this.dataSource.transaction(async (manager) => {

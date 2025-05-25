@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
-import { UploadController } from './controller/upload.controller';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { UserModule } from '../user/user.module';
+
+import { UploadController } from './controller/upload.controller';
 import { UploadService } from './services/upload.service';
 
 @Module({
@@ -14,17 +14,15 @@ import { UploadService } from './services/upload.service';
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(
-            null,
-            file.fieldname + '-' + uniqueSuffix + extname(file.originalname),
-          );
+          const fileExt = extname(file.originalname);
+          cb(null, `${file.fieldname}-${uniqueSuffix}${fileExt}`);
         },
       }),
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
     }),
-    UserModule,
   ],
   controllers: [UploadController],
-  providers:[UploadService]
+  providers: [UploadService],
+  exports: [UploadService], // exporta el servicio para usarlo en otros módulos si es necesario
 })
 export class UploadsModule {}

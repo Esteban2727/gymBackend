@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -45,46 +46,84 @@ export class GymController {
   @UseInterceptors(FileInterceptor('logo'))
   async SaveGYM(
     @Body() gymDto: GymDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File, // archivo opcional
   ) {
-    const uploadedImage = file
-      ? await this.uploadService.uploadImage(file)
-      : gymDto.logo;
+    try {
+      let uploadedImage: string;
 
-    const { name, logo, primary, secondary } = gymDto;
-    const VerifyGym = await this.gymServices.verifyDatasGym(
-      uploadedImage,
-      name,
-      primary,
-      secondary,
-    );
-    if (!VerifyGym) {
-      return { message: 'Gym created successfully' };
+      if (file) {
+        uploadedImage = await this.uploadService.uploadImage(file);
+      } else if (
+        gymDto.logo &&
+        typeof gymDto.logo === 'string' &&
+        gymDto.logo.trim() !== ''
+      ) {
+        uploadedImage = gymDto.logo;
+      } else {
+        throw new BadRequestException('No image provided');
+      }
+
+      const { name, primary, secondary } = gymDto;
+
+      const VerifyGym = await this.gymServices.verifyDatasGym(
+        uploadedImage,
+        name,
+        primary,
+        secondary,
+      );
+
+      if (!VerifyGym) {
+        return { message: 'Gym created successfully' };
+      }
+
+      return VerifyGym;
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Error creating gym');
     }
-    return VerifyGym;
   }
-
   @Patch(':id')
   @UseInterceptors(FileInterceptor('logo'))
   async changeValuesGym(
     @Param('id') id: string,
     @Body() gymDto: GymDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File, // archivo opcional
   ) {
-    const uploadedImage = file
-      ? await this.uploadService.uploadImage(file)
-      : gymDto.logo;
-    const { primary, secondary, third, fourth, fontFamily } = gymDto;
-    const changeValuesOfGym = await this.gymServices.changeGym(
-      id,
-      uploadedImage,
-      primary,
-      secondary,
-      third,
-      fourth,
-      fontFamily,
-    );
-    return changeValuesOfGym;
+    try {
+      let uploadedImage: string;
+
+      if (file) {
+        // Si se envía archivo, se procesa
+        uploadedImage = await this.uploadService.uploadImage(file);
+      } else if (
+        gymDto.logo &&
+        typeof gymDto.logo === 'string' &&
+        gymDto.logo.trim() !== ''
+      ) {
+        // Si no hay archivo pero hay logo en body
+        uploadedImage = gymDto.logo;
+      } else {
+        // No hay imagen válida, aquí puedes decidir si dejar la imagen actual o lanzar error
+        uploadedImage = undefined; // o gymDto.logo si quieres mantener la anterior
+      }
+
+      const { primary, secondary, third, fourth, fontFamily } = gymDto;
+
+      const changeValuesOfGym = await this.gymServices.changeGym(
+        id,
+        uploadedImage,
+        primary,
+        secondary,
+        third,
+        fourth,
+        fontFamily,
+      );
+
+      return changeValuesOfGym;
+    } catch (error) {
+      throw new BadRequestException(
+        error.message || 'Error updating gym values',
+      );
+    }
   }
 
   @Delete('delete')
