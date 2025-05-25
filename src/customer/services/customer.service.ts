@@ -231,7 +231,7 @@ export class CustomerService {
 
     const relation = await this.trainerCustomerRepository.findOne({
       where: { customer: { identification: customer.identification } },
-       relations: ['trainer', 'customer'],
+      relations: ['trainer', 'customer'],
     });
     console.log('relation', relation);
     if (!relation) {

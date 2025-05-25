@@ -19,6 +19,6 @@ export class GeneratePdfController {
 
   @Get('dataPdf/:id')
   async getDataPdf(@Param('id') id: string, @Res() res: Response) {
-    return this.generatePdfServices.createPdfFromGymUsers(id, res);
+    await this.generatePdfServices.createPdfFromGymUsers(id, res);
   }
 }

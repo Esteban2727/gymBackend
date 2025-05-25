@@ -7,9 +7,11 @@ import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { RoutineTrainer } from 'src/rutine/routineTrainer';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
+import { UploadsModule } from 'src/uploadFiles/uploads.module';
 
 @Module({
   imports: [
+    UploadsModule,
     TypeOrmModule.forFeature([
       User,
       TrainerCustomer,
