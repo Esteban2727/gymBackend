@@ -16,7 +16,10 @@ export class GeneratePdfServices {
       const formattedTitle = title.split('-').join(' ');
       const html = this.generateHtml(formattedTitle, data);
 
-      const browser = await puppeteer.launch({ headless: true });
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'], // ⚠️ Necesario para Render.com
+      });
       const page = await browser.newPage();
 
       await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -166,7 +169,7 @@ export class GeneratePdfServices {
   async createPdfFromGymUsers(gymId: string, res: Response): Promise<void> {
     try {
       const users = await this.getCustomerByGym(gymId);
-      console.log(users)
+      console.log(users);
       const formattedTitle = 'Usuarios activos del gimnasio';
       const html = this.generateUserTableHtml(formattedTitle, users);
 
