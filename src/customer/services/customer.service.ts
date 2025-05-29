@@ -242,14 +242,18 @@ export class CustomerService {
     console.log(trainerId, 'rrrrr');
     const closeFriends = await this.customerRepository
       .createQueryBuilder('cm')
-      .select(['cm.username', 'cm.profilePicture'])
+      .select(['cm.username', 'cm.profilePicture', 'cm.identification'])
       .innerJoin(
         TrainerCustomer,
         'tc',
         'tc.customerIdentification = cm.identification',
       )
       .where('tc.trainerIdentification = :trainerId', { trainerId })
-      .andWhere('cm.rol = :rol', { rol: 'customer' })
+      .andWhere('cm.rol = :rol and cm.identification <> :value', {
+        rol: 'customer',
+        value: userId,
+      })
+
       .getMany();
 
     return closeFriends;

@@ -42,6 +42,9 @@ import { TrainerCustomer } from './Trainer/trainerCustomer.entity';
 import { UserMeasurement } from './userMeasurment/user-measurment.entity';
 import { UserMeasurmentModule } from './userMeasurment/user-measurment.module';
 import { RoutineAssignment } from './customer/assignCustomerRutine.entity';
+import { InformationEmail } from './auth/entity/emailInformation.entity';
+import { PaymentModule } from './payment/payment.module';
+import { Payment } from './payment/payment.entity';
 /* import { max } from 'class-validator';
 import { BullModule } from '@nestjs/bullmq';
 import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
@@ -106,6 +109,8 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
       TrainerCustomer,
       UserMeasurement,
       RoutineAssignment,
+      InformationEmail,
+      Payment
     ]),
     AuthModule,
     CustomerModule,
@@ -123,6 +128,7 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
     exerciseModules,
     pruebaModule,
     UserMeasurmentModule,
+    PaymentModule,
     /*     BullModule.forRoot({
       connection: {
         url: process.env.REDIS_URL || 'redis',

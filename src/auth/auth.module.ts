@@ -15,6 +15,9 @@ import { RecoverPasswordController } from './controller/recoverPassword.controll
 import { MailModule } from '../mail/mail.module';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { MailService } from 'src/mail/mail.service';
+import { InformationEmailController } from './controller/information.controller';
+import { InformationEmailServices } from './services/information.service';
+import { InformationEmail } from './entity/emailInformation.entity';
 
 @Module({
   imports: [
@@ -30,16 +33,22 @@ import { MailService } from 'src/mail/mail.service';
         },
       }),
     }),
-    TypeOrmModule.forFeature([User, Subscription]),
+    TypeOrmModule.forFeature([User, Subscription, InformationEmail]),
     MailModule,
   ],
-  controllers: [RegisterController, LoginController, RecoverPasswordController],
+  controllers: [
+    RegisterController,
+    LoginController,
+    RecoverPasswordController,
+    InformationEmailController,
+  ],
   providers: [
     RegisterService,
     loginServices,
     RecoverPasswordServices,
     JwtStrategy,
     MailService,
+    InformationEmailServices,
   ],
   exports: [JwtStrategy],
 })
