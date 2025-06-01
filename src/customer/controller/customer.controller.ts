@@ -25,8 +25,8 @@ export class CustomerController {
   constructor(private readonly CustomerService: CustomerService) {}
 
   @Post('create')
-  @Roles(rolEnum.administrador)
-  @UseGuards(AuthGuard, RolesGuard, GymGuard)
+/*   @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard, GymGuard) */
   async CreateCustomer(@Body() userdto: registerDTO) {
     const {
       cellphone,
@@ -50,8 +50,8 @@ export class CustomerController {
     return sendDataToService;
   }
   @Get(':id')
-  @Roles(rolEnum.customer)
-  @UseGuards(AuthGuard, RolesGuard)
+/*   @Roles(rolEnum.customer)
+  @UseGuards(AuthGuard, RolesGuard) */
   @ApiOperation({
     summary: 'Get customer by ID',
     description: 'Retrieve customer details by their identification number.',
@@ -74,8 +74,8 @@ export class CustomerController {
   }
 
   @Get()
-  @Roles(rolEnum.administrador)
-  @UseGuards(AuthGuard, RolesGuard)
+/*   @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard) */
   @ApiOperation({
     summary: 'Get user session data',
     description: 'Retrieve session data of the authenticated user.',
@@ -96,8 +96,8 @@ export class CustomerController {
   }
 
   @Delete('delete/:id')
-  @Roles(rolEnum.administrador)
-  @UseGuards(AuthGuard, RolesGuard)
+/*   @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard) */
   async deleteCustomer(@Param('id') id: string) {
     console.log(id);
     const deleteCustomer = await this.CustomerService.deleteCustomer(id);
@@ -107,8 +107,8 @@ export class CustomerController {
   }
 
   @Patch('updateData/:id')
-  @Roles(rolEnum.administrador)
-  @UseGuards(AuthGuard, RolesGuard)
+/*   @Roles(rolEnum.administrador)
+  @UseGuards(AuthGuard, RolesGuard) */
   async updateDataCustomer(
     @Param('id') id: string,
     @Body() updateDto: updateDto,
