@@ -173,6 +173,7 @@ export class DashboardServices {
     this.socketGateway.emitDashboardUpdate(payload);
     return payload;
   }
+  //
 
   async getDatasInformationGenderByTrainer(gender: string, trainerId: string) {
     // Total de clientes asignados al entrenador
@@ -228,7 +229,7 @@ export class DashboardServices {
       .createQueryBuilder('u')
       .innerJoin(GymUser, 'gu', 'gu.userIdentification = u.identification')
       .where('gu.gymId = :gymId', { gymId: gymUser.gymId })
-      .andWhere('u.rol = :rol', { rol: 'Trainer' })
+      .andWhere('u.rol = :rol', { rol: 'customer' })
       .getCount();
 
     console.log(totalUsersInGym, 3333);
