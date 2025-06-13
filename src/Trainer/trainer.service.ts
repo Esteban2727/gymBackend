@@ -109,6 +109,7 @@ export class TrainerServices {
         </div>
       `;
       await this.dashboardService.emitFullDashboardUpdate();
+      await this.dashboardService.getSubscriptionActivityByGymId(idGym);
       await this.sendMail.sendEmail(email, html, subject);
 
       await queryRunner.commitTransaction();

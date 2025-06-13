@@ -7,6 +7,7 @@ import { User } from 'src/auth/entity/user.entity';
 import { GymUser } from 'src/gym/gymUser.entity';
 import { Gym } from 'src/gym/gym.entity';
 import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
+import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 @Injectable()
 export class DashboardServices {
@@ -271,5 +272,45 @@ export class DashboardServices {
 
     this.socketGateway.emitDashboardUpdate(payload);
     return payload;
+  }
+
+  async getSubscriptionActivityByGymId(gymId: string): Promise<any> {
+    const data = await this.dataSource
+      .createQueryBuilder()
+      .select('g.id', 'gymId')
+      .addSelect('g.name', 'gymName')
+      .addSelect('COUNT(DISTINCT gu."userIdentification")', 'totalUsers')
+      .addSelect(
+        `
+      COUNT(DISTINCT CASE 
+        WHEN us."remainingDays" > 0 AND us."deletedAt" IS NULL THEN us."customerIdentification"
+      END)
+    `,
+        'activeSubscriptions',
+      )
+      .addSelect(
+        `
+      ROUND(
+        100.0 * COUNT(DISTINCT CASE 
+          WHEN us."remainingDays" > 0 AND us."deletedAt" IS NULL THEN us."customerIdentification"
+        END) / NULLIF(COUNT(DISTINCT gu."userIdentification"), 0), 2
+      )
+    `,
+        'percentageActive',
+      )
+      .from(Gym, 'g')
+      .leftJoin(GymUser, 'gu', 'gu."gymId" = g.id')
+      .leftJoin(
+        Subscription,
+        'us',
+        'us."customerIdentification" = gu."userIdentification"',
+      )
+      .where('g.id = :gymId', { gymId })
+      .groupBy('g.id')
+      .addGroupBy('g.name')
+      .getRawOne();
+
+    this.socketGateway.emitDashboardUpdate({ subscriptionStatsByGym: data });
+    return data;
   }
 }
