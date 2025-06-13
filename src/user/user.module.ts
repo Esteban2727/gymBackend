@@ -8,10 +8,12 @@ import { GymUser } from 'src/gym/gymUser.entity';
 import { RoutineTrainer } from 'src/rutine/routineTrainer';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { UploadsModule } from 'src/uploadFiles/uploads.module';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
     UploadsModule,
+    DashboardModule,
     TypeOrmModule.forFeature([
       User,
       TrainerCustomer,
@@ -22,6 +24,6 @@ import { UploadsModule } from 'src/uploadFiles/uploads.module';
   ],
   providers: [UserService],
   controllers: [UserController],
-  exports: [UserService, TypeOrmModule], 
+  exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}

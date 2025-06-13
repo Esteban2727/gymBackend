@@ -60,4 +60,9 @@ export class DashboardController {
   async emitDashboardTrainerInGym(@Param('id') id: string) {
     return await this.dashboardServices.getDatasInformationByTrainer(id);
   }
+
+  @Post('adminAll/:id')
+  async emitDashboardAdminAll(@Param('id') id: string) {
+    return await this.dashboardServices.getSubscriptionActivityByGymId(id);
+  }
 }
