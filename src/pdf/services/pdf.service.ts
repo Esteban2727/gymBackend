@@ -18,7 +18,7 @@ export class GeneratePdfServices {
 
       const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'], 
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
       const page = await browser.newPage();
 
@@ -169,13 +169,11 @@ export class GeneratePdfServices {
   async createPdfFromGymUsers(gymId: string, res: Response): Promise<void> {
     try {
       const users = await this.getCustomerByGym(gymId);
-      console.log(users);
       const formattedTitle = 'Usuarios activos del gimnasio';
       const html = this.generateUserTableHtml(formattedTitle, users);
 
       const browser = await puppeteer.launch({ headless: true });
       const page = await browser.newPage();
-
       await page.setContent(html, { waitUntil: 'networkidle0' });
 
       const pdfBuffer = await page.pdf({
@@ -192,7 +190,10 @@ export class GeneratePdfServices {
       await browser.close();
 
       const filename = `usuarios-gym-${Date.now()}.pdf`;
-      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`,
+      );
       res.setHeader('Content-Type', 'application/pdf');
       res.end(pdfBuffer);
     } catch (error) {
