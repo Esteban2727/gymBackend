@@ -7,12 +7,13 @@ import { CreatePaymentIntentDto } from '../payment.dto';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('create-intent/:id')
+  @Post('create-intent/:id/:tipo')
   async createIntent(
     @Body() dto: CreatePaymentIntentDto,
     @Param('id') id: string,
+    @Param('tipo') tipo: string,
   ) {
-    return this.paymentService.createPaymentIntent(dto, id);
+    return this.paymentService.createPaymentIntent(dto, id, tipo);
   }
 
   @Get(':id')

@@ -17,7 +17,8 @@ export class GeneratePdfServices {
       const html = this.generateHtml(formattedTitle, data);
 
       const browser = await puppeteer.launch({
-        executablePath: '/usr/bin/google-chrome', // Ajusta la ruta según tu instalación
+        executablePath:
+          '/opt/render/.cache/puppeteer/chrome/linux-136.0.7103.94/chrome',
         headless: true,
       });
 
