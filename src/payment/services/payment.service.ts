@@ -18,7 +18,11 @@ export class PaymentService {
     private readonly subscriptionRepository: Repository<Subscription>,
   ) {}
 
-  async createPaymentIntent(dto: CreatePaymentIntentDto, id: string) {
+  async createPaymentIntent(
+    dto: CreatePaymentIntentDto,
+    id: string,
+    tipo: string,
+  ) {
     const customer = await this.customerRepository.findOne({
       where: { identification: id },
     });
@@ -41,8 +45,10 @@ export class PaymentService {
       },
     });
 
-    if (subscription) {
+    if (subscription && parseInt(tipo) == 1) {
       subscription.remainingDays += 30;
+    } else if (subscription && parseInt(tipo) == 2) {
+      subscription.remainingDays += 60;
     } else {
       subscription = this.subscriptionRepository.create({
         customer: { identification: id },
