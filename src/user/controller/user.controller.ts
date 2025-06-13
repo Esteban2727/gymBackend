@@ -13,6 +13,7 @@ import { UserService } from '../services/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/uploadFiles/services/upload.service';
 import * as multer from 'multer';
+import { AdminDto } from '../adminDto';
 
 @Controller('user')
 export class UserController {
@@ -80,5 +81,14 @@ export class UserController {
   @Get('userProfile/:id')
   async getDataByUser(@Param('id') id: string) {
     return await this.userService.getAllUserByGym(id);
+  }
+
+  @Patch('update/:id/:idGym')
+  async UpdateDataUser(
+    @Param('id') id: string,
+    @Param('idGym') idGym: string,
+    @Body() adminDto: AdminDto,
+  ) {
+    return await this.userService.UpdateuserGym(id, adminDto, idGym);
   }
 }

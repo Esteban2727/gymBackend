@@ -9,6 +9,7 @@ import { RoutineTrainer } from 'src/rutine/routineTrainer';
 import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { UploadsModule } from 'src/uploadFiles/uploads.module';
 import { DashboardModule } from 'src/dashboard/dashboard.module';
+import { Gym } from 'src/gym/gym.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DashboardModule } from 'src/dashboard/dashboard.module';
       GymUser,
       RoutineTrainer,
       Subscription,
+      Gym,
     ]),
   ],
   providers: [UserService],
