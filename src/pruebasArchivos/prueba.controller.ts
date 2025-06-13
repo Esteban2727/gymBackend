@@ -19,4 +19,8 @@ export class ClientesController {
   insertarConLotes() {
     return this.clientesService.insertarConLotes();
   }
+  @Get('insertar-copy')
+  insertarClientesConCopy() {
+    return this.clientesService.insertarConCopy();
+  }
 }
