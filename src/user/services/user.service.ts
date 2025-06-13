@@ -12,6 +12,7 @@ import { Subscription } from 'src/subcription/Entity/subcription.entity';
 import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 import { Trainer } from 'src/Trainer/trainer.entity';
 import { RoutineTrainer } from 'src/rutine/routineTrainer';
+import { AdminDto } from '../adminDto';
 
 @Injectable()
 export class UserService {
@@ -29,6 +30,8 @@ export class UserService {
 
     @InjectRepository(Subscription)
     private subscriptionRepository: Repository<Subscription>,
+    @InjectRepository(Gym)
+    private gymRepository: Repository<Gym>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -57,6 +60,7 @@ export class UserService {
         'tr.certifications as experiencia',
         'tr.yearExperience  as  year',
         'tr.profilePicture',
+        'gm.name as nameGym',
       ])
       .where('us.identification = :value', { value: id })
       .leftJoin(GymUser, 'gu', 'gu.userIdentification = us.identification')
@@ -243,5 +247,24 @@ export class UserService {
       .getRawMany();
 
     return getAllUser;
+  }
+  async UpdateuserGym(id: string, adminDto: AdminDto,idGym:string) {
+    await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ cellphone: adminDto.cel, username: adminDto.name })
+      .where('identification = :id', { id: id })
+      .execute();
+
+    await this.gymRepository
+      .createQueryBuilder()
+      .update(Gym)
+      .set({
+        name: adminDto.nombreGym,
+      })
+      .where('id = :id', { id: idGym })
+      .execute();
+
+    return 'actualizado exitosamente>';
   }
 }

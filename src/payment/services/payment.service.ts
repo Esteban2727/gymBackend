@@ -48,6 +48,14 @@ export class PaymentService {
     if (subscription && parseInt(tipo) == 1) {
       subscription.remainingDays += 30;
     } else if (subscription && parseInt(tipo) == 2) {
+      await this.customerRepository
+        .createQueryBuilder()
+        .update(customer)
+        .set({
+          membershipType: 'Premium',
+        })
+        .where('identification = :id', { id: id })
+        .execute();
       subscription.remainingDays += 60;
     } else {
       subscription = this.subscriptionRepository.create({
