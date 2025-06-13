@@ -17,9 +17,10 @@ export class GeneratePdfServices {
       const html = this.generateHtml(formattedTitle, data);
 
       const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/google-chrome', // Ajusta la ruta según tu instalación
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
+
       const page = await browser.newPage();
 
       await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -172,7 +173,11 @@ export class GeneratePdfServices {
       const formattedTitle = 'Usuarios activos del gimnasio';
       const html = this.generateUserTableHtml(formattedTitle, users);
 
-      const browser = await puppeteer.launch({ headless: true });
+      const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/google-chrome', // Ajusta la ruta según tu instalación
+        headless: true,
+      });
+
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'networkidle0' });
 
