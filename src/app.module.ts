@@ -45,6 +45,8 @@ import { RoutineAssignment } from './customer/assignCustomerRutine.entity';
 import { InformationEmail } from './auth/entity/emailInformation.entity';
 import { PaymentModule } from './payment/payment.module';
 import { Payment } from './payment/payment.entity';
+import { AsistenciasModule } from './schedule/schedule.module';
+import { Asistencia } from './schedule/attendance.entity';
 /* import { max } from 'class-validator';
 import { BullModule } from '@nestjs/bullmq';
 import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
@@ -110,7 +112,8 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
       UserMeasurement,
       RoutineAssignment,
       InformationEmail,
-      Payment
+      Payment,
+      Asistencia,
     ]),
     AuthModule,
     CustomerModule,
@@ -129,6 +132,7 @@ import { EmailQueueModule } from './emailQueue/email-Queue.module'; */
     pruebaModule,
     UserMeasurmentModule,
     PaymentModule,
+    AsistenciasModule,
     /*     BullModule.forRoot({
       connection: {
         url: process.env.REDIS_URL || 'redis',
