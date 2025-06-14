@@ -245,6 +245,7 @@ export class RoutineService {
       .select([
         'routine.id AS routineId',
         'routine.name AS routineName',
+        'routine.description as descriptioRoutine',
         'type.name AS trainingTypeName',
         'type.description AS trainingTypeDescription',
         'exercise.name AS exerciseName',
