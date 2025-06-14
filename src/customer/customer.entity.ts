@@ -4,6 +4,7 @@ import { Subscription } from '../subcription/Entity/subcription.entity';
 import { TrainerCustomer } from 'src/Trainer/trainerCustomer.entity';
 import { UserMeasurement } from 'src/userMeasurment/user-measurment.entity';
 import { Payment } from 'src/payment/payment.entity';
+import { Asistencia } from 'src/schedule/attendance.entity';
 
 @ChildEntity()
 export class Customer extends User {
@@ -28,4 +29,9 @@ export class Customer extends User {
   measurements: UserMeasurement[];
   @OneToMany(() => Payment, (payment) => payment.customer)
   payments: Payment[];
+
+  @OneToMany(() => Asistencia, (asistencia) => asistencia.customer, {
+    cascade: true,
+  })
+  asistencias: Asistencia[];
 }
