@@ -166,6 +166,7 @@ export class RoutineService {
   }
 
   async getAllRoutine(
+    id: string,
     trainingTypeName?: string,
     muscleGroupName?: string,
     difficultyLevel?: string,
@@ -178,6 +179,8 @@ export class RoutineService {
       .innerJoin(TrainingType, 'type', 'type.id = et.training_type_id')
       .innerJoin(ExerciseMuscleGroup, 'emg', 'emg.exerciseId = exercise.id')
       .innerJoin(MuscleGroup, 'mg', 'mg.id = emg.muscleGroupId')
+      .innerJoin(RoutineTrainer, 'rt', 'rt.routineId = routine.id')
+      .where('rt.trainerIdentification = :id', { id: id })
       .select([
         'routine.id AS routineId',
         'routine.name AS routineName',
@@ -207,7 +210,7 @@ export class RoutineService {
     return await query.getRawMany();
   }
 
-  async createRoutine(routineDto: RoutineCreateDto) {
+  async createRoutine(routineDto: RoutineCreateDto, id: string) {
     const {
       name,
       description,
@@ -310,6 +313,16 @@ export class RoutineService {
         .values({
           exercise: { id: exerciseId },
           muscleGroup: { id: mg.id },
+        })
+        .execute();
+
+      const insertRoutineWithTrainer = await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(RoutineTrainer)
+        .values({
+          routine: { id: insertRoutine.raw[0].id },
+          trainer: { identification: id },
         })
         .execute();
 
