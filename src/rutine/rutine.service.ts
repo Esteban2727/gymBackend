@@ -40,16 +40,77 @@ export class RoutineService {
     }
     return specificRoutine;
   }
-  async deleteServiceRoutine(name: string) {
-    const routinetoDelete = await this.routineRepository.findOne({
-      where: { name },
+  async deleteServiceRoutine(id: string) {
+    const routine = await this.routineRepository.findOne({
+      where: { id: parseInt(id) },
+      relations: ['routineExercises', 'routineTrainers'],
     });
-    if (!routinetoDelete) {
+
+    if (!routine) {
       return { Advertencia: 'Rutina no existente' };
     }
-    await this.routineRepository.softRemove(routinetoDelete);
-    return { mensaje: 'Ejercico eliminado exitosamente (soft delete)' };
+
+    // Iniciar transacción
+    await this.dataSource.transaction(async (manager) => {
+      // 1. Obtener ejercicios relacionados con la rutina
+      const routineExercises = await manager
+        .getRepository(RoutineExercise)
+        .find({
+          where: { routine: { id: routine.id } },
+          relations: ['exercise'],
+        });
+
+      for (const routineExercise of routineExercises) {
+        const exerciseId = routineExercise.exercise.id;
+
+        // 2. Eliminar asociaciones con tipo de entrenamiento
+        const trainingRelations = await manager
+          .getRepository(ExerciseTrainingType)
+          .find({
+            where: { exercise: { id: exerciseId } },
+          });
+        if (trainingRelations.length > 0) {
+          await manager
+            .getRepository(ExerciseTrainingType)
+            .softRemove(trainingRelations);
+        }
+
+        // 3. Eliminar asociaciones con grupo muscular
+        const muscleGroupRelations = await manager
+          .getRepository(ExerciseMuscleGroup)
+          .find({
+            where: { exercise: { id: exerciseId } },
+          });
+        if (muscleGroupRelations.length > 0) {
+          await manager
+            .getRepository(ExerciseMuscleGroup)
+            .softRemove(muscleGroupRelations);
+        }
+
+        // 4. Eliminar el ejercicio
+        await manager
+          .getRepository(Exercise)
+          .softRemove(routineExercise.exercise);
+      }
+
+      // 5. Eliminar RoutineExercise
+      await manager.getRepository(RoutineExercise).softRemove(routineExercises);
+
+      // 6. Eliminar RoutineTrainer
+      const trainers = await manager.getRepository(RoutineTrainer).find({
+        where: { routine: { id: routine.id } },
+      });
+      if (trainers.length > 0) {
+        await manager.getRepository(RoutineTrainer).softRemove(trainers);
+      }
+
+      // 7. Eliminar la rutina
+      await manager.getRepository(Routine).softRemove(routine);
+    });
+
+    return { mensaje: 'Rutina eliminada exitosamente (soft delete)' };
   }
+
   async createServiceRoutine(name: string, description: string, id: string) {
     const findRoutine = await this.routineRepository.findOne({
       where: { name },
@@ -113,7 +174,7 @@ export class RoutineService {
     const result = await this.routineRepository
       .createQueryBuilder()
       .update(Routine)
-      .set(updateDto)
+      .set({ description: updateDto.description, name: updateDto.name })
       .where('id = :id', { id })
       .execute();
 

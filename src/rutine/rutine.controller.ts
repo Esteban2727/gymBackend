@@ -26,9 +26,9 @@ export class RoutineController {
     const routine = await this.routineService.getServiceRoutineByName(name);
     return routine;
   }
-  @Delete('delete')
-  async deleteRoutine(@Query('name') name: string) {
-    const dRoutine = await this.routineService.deleteServiceRoutine(name);
+  @Delete('delete/:id')
+  async deleteRoutine(@Param('id') id: string) {
+    const dRoutine = await this.routineService.deleteServiceRoutine(id);
     return dRoutine;
   }
   @Post('createRoutine/:id')
@@ -70,7 +70,7 @@ export class RoutineController {
     @Query('level') level: string,
     @Param('id') id: string,
   ) {
-    console.log(id)
+    console.log(id);
     return await this.routineService.getAllRoutine(id, type, muscle, level);
   }
 
