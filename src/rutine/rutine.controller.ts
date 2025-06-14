@@ -81,4 +81,10 @@ export class RoutineController {
   ) {
     await this.routineService.createRoutine(rutineDto, id);
   }
+
+  @Get('bringAllRoutine/:id')
+  async bringRoutine(@Param('id') id: string) {
+    console.log(id);
+    return await this.routineService.bringRoutine(id);
+  }
 }

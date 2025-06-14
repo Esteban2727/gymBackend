@@ -398,4 +398,31 @@ export class RoutineService {
       await queryRunner.release();
     }
   }
+
+  async bringRoutine(id: string) {
+    const query = this.routineRepository
+      .createQueryBuilder('routine')
+      .innerJoin(RoutineExercise, 're', 're.routineId = routine.id')
+      .innerJoin(Exercise, 'exercise', 'exercise.id = re.exerciseId')
+      .innerJoin(ExerciseTrainingType, 'et', 'et.exercise_id = exercise.id')
+      .innerJoin(TrainingType, 'type', 'type.id = et.training_type_id')
+      .innerJoin(ExerciseMuscleGroup, 'emg', 'emg.exerciseId = exercise.id')
+      .innerJoin(MuscleGroup, 'mg', 'mg.id = emg.muscleGroupId')
+      .innerJoin(RoutineTrainer, 'rt', 'rt.routineId = routine.id')
+      .where('routine.id = :id', { id: id })
+      .select([
+        'routine.id AS routineId',
+        'routine.name AS routineName',
+        'routine.description as descriptioRoutine',
+        'type.name AS trainingTypeName',
+        'type.description AS trainingTypeDescription',
+        'exercise.name AS exerciseName',
+        'exercise.description AS exerciseDescription',
+        'exercise.equipment AS exerciseEquipment',
+        'exercise.difficulty_level AS difficultyLevel',
+        'mg.name AS muscleGroup',
+      ]);
+
+    return await query.getRawMany();
+  }
 }
