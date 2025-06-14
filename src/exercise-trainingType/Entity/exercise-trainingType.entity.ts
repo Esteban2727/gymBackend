@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { Exercise } from '../../exercises/Entity/exercise.entity';
 import { TrainingType } from '../../trainingType/entity/trainingType.entity';
 
@@ -10,11 +16,14 @@ export class ExerciseTrainingType {
   @ManyToOne(() => Exercise, (exercise) => exercise.exerciseTrainingTypes)
   @JoinColumn({ name: 'exercise_id' })
   exercise: Exercise;
-
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date; // Para que funcione soft delete
   @ManyToOne(
     () => TrainingType,
     (trainingType) => trainingType.exerciseTrainingTypes,
   )
   @JoinColumn({ name: 'training_type_id' })
   trainingType: TrainingType;
+
+
 }
