@@ -63,17 +63,22 @@ export class RoutineController {
     return await this.routineService.getTrainerWithRoutine(id);
   }
 
-  @Get('getAllRoutine')
+  @Get('getAllRoutine/:id')
   async getAllRoutine(
     @Query('type') type: string,
     @Query('muscle') muscle: string,
     @Query('level') level: string,
+    @Param('id') id: string,
   ) {
-    return await this.routineService.getAllRoutine(type, muscle, level);
+    console.log(id)
+    return await this.routineService.getAllRoutine(id, type, muscle, level);
   }
 
-  @Post('createRutuine')
-  async createRutine(@Body() rutineDto: RoutineCreateDto) {
-    await this.routineService.createRoutine(rutineDto);
+  @Post('createRutuine/:id')
+  async createRutine(
+    @Body() rutineDto: RoutineCreateDto,
+    @Param('id') id: string,
+  ) {
+    await this.routineService.createRoutine(rutineDto, id);
   }
 }
