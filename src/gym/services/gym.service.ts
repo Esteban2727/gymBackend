@@ -12,6 +12,7 @@ import { DashboardServices } from 'src/dashboard/services/dashboard.service';
 import { Customer } from 'src/customer/customer.entity';
 import { error } from 'console';
 import { EditTrainerDto } from '../DTO/editTrainerDto';
+import { Subscription } from 'src/subcription/Entity/subcription.entity';
 
 @Injectable()
 export class gymServices {
@@ -25,6 +26,8 @@ export class gymServices {
     private readonly sendMail: MailService,
     @InjectRepository(User)
     readonly userRepository: Repository<User>,
+    @InjectRepository(Subscription)
+    readonly subcriptionRepository: Repository<Subscription>,
     private readonly dataSource: DataSource,
     private readonly dashboardService: DashboardServices,
   ) {}
@@ -400,5 +403,22 @@ export class gymServices {
       .where('identification = :id', { id })
       .execute();
     return { message: 'editado' };
+  }
+
+  async addDays(numero: string, id: string) {
+    const verify = await this.userRepository.findOne({
+      where: { identification: id },
+    });
+    if (!verify) {
+      return 'no se encuentra ese usuario';
+    }
+    await this.subcriptionRepository
+      .createQueryBuilder()
+      .update(Subscription)
+      .set({
+        remainingDays: () => `remainingDays + ${parseInt(numero)}`, 
+      })
+      .where('customerIdentification = :id', { id: id })
+      .execute();
   }
 }

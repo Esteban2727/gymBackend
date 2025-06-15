@@ -212,4 +212,9 @@ export class GymController {
   ) {
     return await this.gymServices.editTrainer(editTrainerDto, id);
   }
+
+  @Post('days/:id/:numero')
+  async addDys(@Param('numero') numero: string, @Param('id') id: string) {
+    return await this.gymServices.addDays(numero, id);
+  }
 }
